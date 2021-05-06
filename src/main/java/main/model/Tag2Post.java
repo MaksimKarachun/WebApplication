@@ -3,7 +3,6 @@ package main.model;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
-@Entity
 @Table(name = "tag2post")
 public class Tag2Post {
 

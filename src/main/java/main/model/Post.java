@@ -46,8 +46,11 @@ public class Post {
     @NotNull
     private int viewCount;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    List<Tag2Post> tagsToPost;
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "tag2post",
+            joinColumns = {@JoinColumn(name = "post_id")},
+            inverseJoinColumns = {@JoinColumn(name = "tag_id")})
+    List<Tag> tags;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<PostVote> postVotes;
