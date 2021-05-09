@@ -1,9 +1,6 @@
 package main.model;
 
-import com.sun.istack.Nullable;
-
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Entity
@@ -11,28 +8,24 @@ import java.util.Date;
 public class PostComment {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @NotNull
+    @Column(nullable = false)
     private int id;
 
     @Column(name = "parent_id")
-    @Nullable
     private int parentId;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id", referencedColumnName = "id")
-    @NotNull
+    @JoinColumn(name = "post_id", referencedColumnName = "id", nullable = false)
     private Post post;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    @NotNull
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User user;
 
-    @NotNull
+    @Column(columnDefinition = "DATETIME", nullable = false)
     private Date time;
 
-    @Column(columnDefinition = "TEXT")
-    @NotNull
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String text;
 
 }

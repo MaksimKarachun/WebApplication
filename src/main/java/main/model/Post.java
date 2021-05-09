@@ -1,7 +1,6 @@
 package main.model;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
@@ -11,39 +10,34 @@ public class Post {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @NotNull
+    @Column(nullable = false)
     private int id;
 
-    @NotNull
-    @Column(name = "is_active", columnDefinition = "TINYINT")
+    @Column(name = "is_active", columnDefinition = "TINYINT", nullable = false)
     private boolean isActive;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "moderation_status", columnDefinition = "enum('NEW', 'DECLINED', 'ACCEPTED') default 'NEW'")
-    @NotNull
+    @Column(name = "moderation_status", columnDefinition = "ENUM('NEW', 'DECLINED', 'ACCEPTED') default 'NEW'", nullable = false)
     private ModerationStatus moderationStatus;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "moderator_id", referencedColumnName = "id")
-    @NotNull
     private User moderatorId;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    @NotNull
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User user;
 
-    @NotNull
+    @Column(columnDefinition = "DATETIME", nullable = false)
     private Date time;
 
-    @NotNull
+    @Column(nullable = false)
     private String title;
 
-    @NotNull
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String text;
 
-    @Column(name = "view_count")
-    @NotNull
+    @Column(name = "view_count", nullable = false)
     private int viewCount;
 
     @ManyToMany(cascade = CascadeType.ALL)

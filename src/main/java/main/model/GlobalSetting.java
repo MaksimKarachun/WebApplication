@@ -1,7 +1,6 @@
 package main.model;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "global_settings")
@@ -9,16 +8,16 @@ public class GlobalSetting {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @NotNull
+    @Column(nullable = false)
     private int id;
 
-    @NotNull
+    @Column(nullable = false)
     private String code;
 
-    @NotNull
+    @Column(nullable = false)
     private String name;
 
-    @NotNull
+    @Column(nullable = false)
     private String value;
 
     public String getValue() {

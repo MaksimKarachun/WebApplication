@@ -1,7 +1,6 @@
 package main.model;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Entity
@@ -10,17 +9,15 @@ public class CaptchaCode {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @NotNull
+    @Column(nullable = false)
     private int id;
 
-    @NotNull
+    @Column(columnDefinition = "DATETIME", nullable = false)
     private Date time;
 
-    @Column(columnDefinition = "TINYTEXT")
-    @NotNull
+    @Column(columnDefinition = "TINYTEXT", nullable = false)
     private String code;
 
-    @Column(name = "secret_code", columnDefinition = "TINYTEXT")
-    @NotNull
+    @Column(name = "secret_code", columnDefinition = "TINYTEXT", nullable = false)
     private String secretCode;
 }

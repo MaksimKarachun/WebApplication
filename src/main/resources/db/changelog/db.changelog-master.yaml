@@ -1,0 +1,687 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Karachun Maksim
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: is_moderator
+                  type: TINYINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: reg_time
+                  type: DATETIME
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: password
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: code
+                  type: varchar(255)
+              - column:
+                  name: photo
+                  type: TEXT
+        - createTable:
+            tableName: posts
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: is_active
+                  type: TINYINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: moderation_status
+                  type: enum('NEW', 'ACCEPTED', 'DECLINED')
+                  defaultValue: 'NEW'
+                  constraints:
+                    nullable: false
+              - column:
+                  name: moderator_id
+                  type: INT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: user_id
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: time
+                  type: DATETIME
+                  constraints:
+                    nullable: false
+              - column:
+                  name: title
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: text
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: view_count
+                  type: INT
+                  constraints:
+                    nullable: false
+        - createTable:
+            tableName: post_votes
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: post_id
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: time
+                  type: DATETIME
+                  constraints:
+                    nullable: false
+              - column:
+                  name: value
+                  type: TINYINT
+                  constraints:
+                    nullable: false
+        - createTable:
+            tableName: tags
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+        - createTable:
+            tableName: tag2post
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: post_id
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: tag_id
+                  type: INT
+                  constraints:
+                    nullable: false
+        - createTable:
+            tableName: post_comments
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: parent_id
+                  type: INT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: post_id
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: time
+                  type: DATETIME
+                  constraints:
+                    nullable: false
+              - column:
+                  name: text
+                  type: TEXT
+                  constraints:
+                    nullable: false
+        - createTable:
+            tableName: captcha_codes
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: time
+                  type: DATETIME
+                  constraints:
+                    nullable: false
+              - column:
+                  name: code
+                  type: TINYTEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: secret_code
+                  type: TINYTEXT
+                  constraints:
+                    nullable: false
+        - createTable:
+            tableName: global_settings
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: code
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: value
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: 2
+      author: Karachun Maksim
+      comment: "insert data"
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: is_moderator
+                  value: 1
+              - column:
+                  name: reg_time
+                  value: '2021-05-09 22:50:00'
+              - column:
+                  name: name
+                  value: 'user1'
+              - column:
+                  name: email
+                  value: 'email1'
+              - column:
+                  name: password
+                  value: 'password1'
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: is_moderator
+                  value: 0
+              - column:
+                  name: reg_time
+                  value: '2021-05-08 15:50:00'
+              - column:
+                  name: name
+                  value: 'user2'
+              - column:
+                  name: email
+                  value: 'email2'
+              - column:
+                  name: password
+                  value: 'password2'
+        - insert:
+            tableName: posts
+            columns:
+              - column:
+                  name: is_active
+                  value: 1
+              - column:
+                  name: moderation_status
+                  value: 'ACCEPTED'
+              - column:
+                  name: user_id
+                  value: 1
+              - column:
+                  name: time
+                  value: '2021-05-09 23:50:00'
+              - column:
+                  name: title
+                  value: 'title1'
+              - column:
+                  name: text
+                  value: 'post text 1'
+              - column:
+                  name: view_count
+                  value: 15
+        - insert:
+            tableName: posts
+            columns:
+              - column:
+                  name: is_active
+                  value: 1
+              - column:
+                  name: moderation_status
+                  value: 'ACCEPTED'
+              - column:
+                  name: user_id
+                  value: 1
+              - column:
+                  name: time
+                  value: '2021-05-10 23:50:00'
+              - column:
+                  name: title
+                  value: 'title2'
+              - column:
+                  name: text
+                  value: 'post text 2'
+              - column:
+                  name: view_count
+                  value: 10
+        - insert:
+            tableName: posts
+            columns:
+              - column:
+                  name: is_active
+                  value: 1
+              - column:
+                  name: moderation_status
+                  value: 'NEW'
+              - column:
+                  name: user_id
+                  value: 2
+              - column:
+                  name: time
+                  value: '2021-05-11 23:50:00'
+              - column:
+                  name: title
+                  value: 'title3'
+              - column:
+                  name: text
+                  value: 'post text 3'
+              - column:
+                  name: view_count
+                  value: 12
+        - insert:
+            tableName: posts
+            columns:
+              - column:
+                  name: is_active
+                  value: 1
+              - column:
+                  name: moderation_status
+                  value: 'ACCEPTED'
+              - column:
+                  name: user_id
+                  value: 2
+              - column:
+                  name: time
+                  value: '2021-05-11 12:50:00'
+              - column:
+                  name: title
+                  value: 'title4'
+              - column:
+                  name: text
+                  value: 'post text 4'
+              - column:
+                  name: view_count
+                  value: 12
+        - insert:
+            tableName: posts
+            columns:
+              - column:
+                  name: is_active
+                  value: 0
+              - column:
+                  name: moderation_status
+                  value: 'ACCEPTED'
+              - column:
+                  name: user_id
+                  value: 2
+              - column:
+                  name: time
+                  value: '2021-05-11 13:50:00'
+              - column:
+                  name: title
+                  value: 'title5'
+              - column:
+                  name: text
+                  value: 'post text 5'
+              - column:
+                  name: view_count
+                  value: 3
+        - insert:
+            tableName: post_votes
+            columns:
+              - column:
+                  name: user_id
+                  value: 1
+              - column:
+                  name: post_id
+                  value: 3
+              - column:
+                  name: time
+                  value: '2021-05-12 13:50:00'
+              - column:
+                  name: value
+                  value: 1
+        - insert:
+            tableName: post_votes
+            columns:
+              - column:
+                  name: user_id
+                  value: 1
+              - column:
+                  name: post_id
+                  value: 4
+              - column:
+                  name: time
+                  value: '2021-05-12 14:50:00'
+              - column:
+                  name: value
+                  value: -1
+        - insert:
+            tableName: post_votes
+            columns:
+              - column:
+                  name: user_id
+                  value: 2
+              - column:
+                  name: post_id
+                  value: 1
+              - column:
+                  name: time
+                  value: '2021-05-12 14:50:00'
+              - column:
+                  name: value
+                  value: 1
+        - insert:
+            tableName: post_votes
+            columns:
+              - column:
+                  name: user_id
+                  value: 2
+              - column:
+                  name: post_id
+                  value: 2
+              - column:
+                  name: time
+                  value: '2021-05-12 14:50:00'
+              - column:
+                  name: value
+                  value: 1
+        - insert:
+            tableName: tags
+            columns:
+              - column:
+                  name: name
+                  value: 'tag1'
+        - insert:
+            tableName: tags
+            columns:
+              - column:
+                  name: name
+                  value: 'tag2'
+        - insert:
+            tableName: tags
+            columns:
+              - column:
+                  name: name
+                  value: 'tag3'
+        - insert:
+            tableName: tags
+            columns:
+              - column:
+                  name: name
+                  value: 'tag4'
+        - insert:
+            tableName: tags
+            columns:
+              - column:
+                  name: name
+                  value: 'tag5'
+        - insert:
+            tableName: tag2post
+            columns:
+              - column:
+                  name: post_id
+                  value: 1
+              - column:
+                  name: tag_id
+                  value: 1
+        - insert:
+            tableName: tag2post
+            columns:
+              - column:
+                  name: post_id
+                  value: 1
+              - column:
+                  name: tag_id
+                  value: 2
+        - insert:
+            tableName: tag2post
+            columns:
+              - column:
+                  name: post_id
+                  value: 1
+              - column:
+                  name: tag_id
+                  value: 3
+        - insert:
+            tableName: tag2post
+            columns:
+              - column:
+                  name: post_id
+                  value: 2
+              - column:
+                  name: tag_id
+                  value: 4
+        - insert:
+            tableName: tag2post
+            columns:
+              - column:
+                  name: post_id
+                  value: 3
+              - column:
+                  name: tag_id
+                  value: 1
+        - insert:
+            tableName: tag2post
+            columns:
+              - column:
+                  name: post_id
+                  value: 3
+              - column:
+                  name: tag_id
+                  value: 5
+        - insert:
+            tableName: tag2post
+            columns:
+              - column:
+                  name: post_id
+                  value: 4
+              - column:
+                  name: tag_id
+                  value: 3
+        - insert:
+            tableName: tag2post
+            columns:
+              - column:
+                  name: post_id
+                  value: 5
+              - column:
+                  name: tag_id
+                  value: 2
+        - insert:
+            tableName: post_comments
+            columns:
+              - column:
+                  name: post_id
+                  value: 1
+              - column:
+                  name: user_id
+                  value: 2
+              - column:
+                  name: time
+                  value: '2021-05-12 14:50:00'
+              - column:
+                  name: text
+                  value: 'comment1'
+        - insert:
+            tableName: post_comments
+            columns:
+              - column:
+                  name: post_id
+                  value: 2
+              - column:
+                  name: user_id
+                  value: 2
+              - column:
+                  name: time
+                  value: '2021-05-12 14:50:00'
+              - column:
+                  name: text
+                  value: 'comment2'
+        - insert:
+            tableName: post_comments
+            columns:
+              - column:
+                  name: post_id
+                  value: 4
+              - column:
+                  name: user_id
+                  value: 1
+              - column:
+                  name: time
+                  value: '2021-05-12 14:50:00'
+              - column:
+                  name: text
+                  value: 'comment3'
+        - insert:
+            tableName: captcha_codes
+            columns:
+              - column:
+                  name: time
+                  value: '2021-05-12 14:50:00'
+              - column:
+                  name: code
+                  value: 'code1'
+              - column:
+                  name: secret_code
+                  value: 'secret1'
+        - insert:
+            tableName: captcha_codes
+            columns:
+              - column:
+                  name: time
+                  value: '2021-05-12 14:50:00'
+              - column:
+                  name: code
+                  value: 'code2'
+              - column:
+                  name: secret_code
+                  value: 'secret2'
+        - insert:
+            tableName: captcha_codes
+            columns:
+              - column:
+                  name: time
+                  value: '2021-05-12 14:50:00'
+              - column:
+                  name: code
+                  value: 'code3'
+              - column:
+                  name: secret_code
+                  value: 'secret3'
+        - insert:
+            tableName: global_settings
+            columns:
+              - column:
+                  name: code
+                  value: 'MULTIUSER_MODE'
+              - column:
+                  name: name
+                  value: 'Многопользовательский режим'
+              - column:
+                  name: value
+                  value: 'YES'
+        - insert:
+            tableName: global_settings
+            columns:
+              - column:
+                  name: code
+                  value: 'POST_PREMODERATION'
+              - column:
+                  name: name
+                  value: 'Премодерация постов'
+              - column:
+                  name: value
+                  value: 'YES'
+        - insert:
+            tableName: global_settings
+            columns:
+              - column:
+                  name: code
+                  value: 'STATISTICS_IS_PUBLIC'
+              - column:
+                  name: name
+                  value: 'Показывать всем статистику блога'
+              - column:
+                  name: value
+                  value: 'YES'

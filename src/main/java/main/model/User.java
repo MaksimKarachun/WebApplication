@@ -10,24 +10,22 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @NotNull
+    @Column(nullable = false)
     private int id;
 
-    @Column(name = "is_moderator", columnDefinition = "TINYINT")
-    @NotNull
+    @Column(name = "is_moderator", columnDefinition = "TINYINT", nullable = false)
     private boolean isModerator;
 
-    @Column(name = "reg_time", columnDefinition = "DATETIME")
-    @NotNull
+    @Column(name = "reg_time", columnDefinition = "DATETIME", nullable = false)
     private Date regTime;
 
-    @NotNull
+    @Column(nullable = false)
     private String name;
 
-    @NotNull
+    @Column(nullable = false)
     private String email;
 
-    @NotNull
+    @Column(nullable = false)
     private String password;
 
     private String code;

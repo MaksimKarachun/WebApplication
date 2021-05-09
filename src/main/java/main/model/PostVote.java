@@ -10,24 +10,20 @@ public class PostVote {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @NotNull
+    @Column(nullable = false)
     private int id;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    @NotNull
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User user;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id", referencedColumnName = "id")
-    @NotNull
+    @JoinColumn(name = "post_id", referencedColumnName = "id", nullable = false)
     private Post post;
 
-    @Column(columnDefinition = "DATETIME")
-    @NotNull
+    @Column(columnDefinition = "DATETIME", nullable = false)
     private Date time;
 
-    @Column(columnDefinition = "TINYINT")
-    @NotNull
+    @Column(columnDefinition = "TINYINT", nullable = false)
     private byte value;
 }
