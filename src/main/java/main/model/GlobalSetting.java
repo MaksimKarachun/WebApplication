@@ -20,4 +20,8 @@ public class GlobalSetting {
 
     @NotNull
     private String value;
+
+    public String getValue() {
+        return value;
+    }
 }
