@@ -51,4 +51,113 @@ public class Post {
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<PostComment> postComments;
+
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
+    public ModerationStatus getModerationStatus() {
+        return moderationStatus;
+    }
+
+    public void setModerationStatus(ModerationStatus moderationStatus) {
+        this.moderationStatus = moderationStatus;
+    }
+
+    public User getModeratorId() {
+        return moderatorId;
+    }
+
+    public void setModeratorId(User moderatorId) {
+        this.moderatorId = moderatorId;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Date getTime() {
+        return time;
+    }
+
+    public void setTime(Date time) {
+        this.time = time;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public int getViewCount() {
+        return viewCount;
+    }
+
+    public void setViewCount(int viewCount) {
+        this.viewCount = viewCount;
+    }
+
+    public List<Tag> getTags() {
+        return tags;
+    }
+
+    public List<PostVote> getPostVotes() {
+        return postVotes;
+    }
+
+    public List<PostComment> getPostComments() {
+        return postComments;
+    }
+
+    public int getVotesCount(){
+        return postVotes.size();
+    }
+
+    public int getLikeCount(){
+        int likeCount = 0;
+        for (PostVote postvote : postVotes){
+            if (postvote.getValue() == 1){
+                likeCount++;
+            }
+        }
+        return likeCount;
+    }
+
+    public int getDislikeCount(){
+        int dislikeCount = 0;
+        for (PostVote postvote : postVotes){
+            if (postvote.getValue() == -1){
+                dislikeCount++;
+            }
+        }
+        return dislikeCount;
+    }
 }
