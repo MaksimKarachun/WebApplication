@@ -1,9 +1,7 @@
 package main.api.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import javafx.geometry.Pos;
 import main.api.response.jsonClasses.PostJson;
-
 import java.util.ArrayList;
 import java.util.List;
 

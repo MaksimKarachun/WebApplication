@@ -8,15 +8,15 @@ import javax.validation.constraints.NotNull;
 public class Tag2Post {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @NotNull
     private int id;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "post_id", referencedColumnName = "id", nullable = false, foreignKey = @ForeignKey(name = "FK_t2p_post_id"))
     private Post post;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "tag_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "tag_id", referencedColumnName = "id", nullable = false, foreignKey = @ForeignKey(name = "FK_t2p_tag_id"))
     private Tag tag;
 }
