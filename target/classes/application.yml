@@ -6,10 +6,15 @@ spring:
     username: root
     password: root
   jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
     hibernate:
-      ddl-auto: none
+      ddl-auto: validate
   liquibase:
-    enabled: false
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    url: jdbc:mysql://localhost:3306/webapplication?serverTimezone=Europe/Moscow
+    user: root
+    password: root
+    enabled: true
 
 #default parameters for api/init
 blog:
@@ -19,3 +24,6 @@ blog:
   email: mail@mail.ru
   copyright: Karachun Maksim
   copyrightFrom: 2021
+
+server:
+  port: 8081

@@ -1,5 +1,8 @@
 package main.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -8,10 +11,12 @@ import java.util.Date;
 public class CaptchaCode {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
     private int id;
 
+    @DateTimeFormat(pattern = "yyyy.MM.dd HH-mm")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd HH-mm")
     @Column(columnDefinition = "DATETIME", nullable = false)
     private Date time;
 
