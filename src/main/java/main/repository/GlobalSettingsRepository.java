@@ -1,4 +1,4 @@
-package main.model.repositories;
+package main.repository;
 
 import main.model.GlobalSetting;
 import org.springframework.data.jpa.repository.Query;

@@ -1,9 +1,11 @@
 package main.model;
 
+import lombok.Data;
 import javax.persistence.*;
 
 @Entity
 @Table(name = "global_settings")
+@Data
 public class GlobalSetting {
 
     @Id
@@ -20,7 +22,4 @@ public class GlobalSetting {
     @Column(nullable = false)
     private String value;
 
-    public String getValue() {
-        return value;
-    }
 }

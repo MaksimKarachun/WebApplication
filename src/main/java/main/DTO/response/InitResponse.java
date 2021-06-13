@@ -1,8 +1,10 @@
-package main.api.response;
+package main.DTO.response;
 
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+@Data
 @Component
 public class InitResponse {
 
@@ -19,27 +21,4 @@ public class InitResponse {
     @Value("${blog.copyrightFrom}")
     private String copyrightFrom;
 
-    public String getTitle() {
-        return title;
-    }
-
-    public String getSubtitle() {
-        return subtitle;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getCopyright() {
-        return copyright;
-    }
-
-    public String getCopyrightFrom() {
-        return copyrightFrom;
-    }
 }
