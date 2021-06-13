@@ -1,7 +1,6 @@
-package main.model.repositories;
+package main.repository;
 
-import main.api.response.jsonClasses.TagCount;
-import main.api.response.jsonClasses.TagJson;
+import main.DTO.dtoObj.TagCount;
 import main.model.Tag;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -19,7 +18,7 @@ public interface TagRepository extends CrudRepository<Tag, Integer> {
             "join Post as p on p.id = tp.post.id " +
             "where p.moderationStatus = 'ACCEPTED' " +
             "and p.isActive = 1 " +
-            "and p.time < sysdate() " +
+            "and p.time < sysdate()" +
             "group by t.name")
     List<TagCount> findDefaultTags();
 }

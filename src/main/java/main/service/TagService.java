@@ -1,10 +1,9 @@
 package main.service;
 
-import main.api.response.TagResponse;
-import main.api.response.jsonClasses.TagCount;
-import main.api.response.jsonClasses.TagJson;
-import main.model.repositories.TagRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import main.DTO.response.TagResponse;
+import main.DTO.dtoObj.TagCount;
+import main.DTO.dtoObj.Tag;
+import main.repository.TagRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -12,7 +11,6 @@ import java.util.List;
 @Service
 public class TagService {
 
-    @Autowired
     private final TagRepository tagRepository;
 
     public TagService(TagRepository tagRepository) {
@@ -22,9 +20,8 @@ public class TagService {
     public TagResponse getDefaultTagResponse(){
         TagResponse tagResponse = new TagResponse();
         List<TagCount> tagCount = tagRepository.findDefaultTags();
-        double maxCount = getMaxCount(tagCount);
         for (TagCount tag : tagCount) {
-            tagResponse.addToTagList(new TagJson(tag.getName(), tag.getCount() / maxCount));
+            tagResponse.addToTagList(new Tag(tag.getName(), tag.getCount() / getMaxCount(tagCount)));
         }
         return tagResponse;
     }
