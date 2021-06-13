@@ -20,6 +20,10 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
             "and isActive = 1")
     List<Post> findPostsByParamRecent(Pageable pageable);
 
+    /*
+     * Метод для модификатора popular:
+     * сортировать посты по количеству комментариев
+     */
     @Query("select p, count(p) as commentCount from Post as p " +
             "left join PostComment as pc on p.id = pc.post.id " +
             "where p.moderationStatus = 'ACCEPTED' " +
@@ -27,6 +31,10 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
             "and p.isActive = 1 group by p.id")
     List<Post> findPostsByParamPopular(Pageable pageable);
 
+    /*
+     * Метод для модификатора best:
+     * сортировать посты по количеству лайков
+     */
     @Query("select p, count(p) as postLike from Post as p " +
             "left join PostVote as pv on p.id = pv.post.id " +
             "where p.moderationStatus = 'ACCEPTED' " +
