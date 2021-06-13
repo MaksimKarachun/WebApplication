@@ -6,6 +6,7 @@ import main.DTO.dtoObj.User;
 import main.repository.PostRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -20,27 +21,36 @@ public class PostService {
 
     public PostResponse getPosts(int offset, int limit, String mode){
         int pageNumber = offset / limit;
-        Pageable pageWithPosts = PageRequest.of(pageNumber, limit);
         PostResponse postResponse = new PostResponse();
+        Pageable pageWithPosts;
+        List<main.model.Post> postList;
         switch (mode) {
             case "recent":
-                getRecentPosts(postResponse, pageWithPosts);
+                pageWithPosts = PageRequest.of(pageNumber, limit, Sort.by("time").descending());
+                postList = postRepository.findPostsByParamRecent(pageWithPosts);
+                prepareRequest(postList);
                 break;
             case "popular":
-                // TODO: 16.05.2021
+                pageWithPosts = PageRequest.of(pageNumber, limit, Sort.by("commentCount").descending());
+                postList = postRepository.findPostsByParamPopular(pageWithPosts);
+                prepareRequest(postList);
                 break;
             case "best":
-                // TODO: 16.05.2021
+                pageWithPosts = PageRequest.of(pageNumber, limit, Sort.by("postLike").descending());
+                postList = postRepository.findPostsByParamBest(pageWithPosts);
+                prepareRequest(postList);
                 break;
             case "early":
-                // TODO: 16.05.2021
+                pageWithPosts = PageRequest.of(pageNumber, limit, Sort.by("time"));
+                postList = postRepository.findPostsByParamRecent(pageWithPosts);
+                prepareRequest(postList);
                 break;
         }
         return postResponse;
     }
 
-    private void getRecentPosts(PostResponse postResponse, Pageable pageWithPosts){
-        List<main.model.Post> postList = postRepository.findPostsByParamRecent(pageWithPosts);
+    private void prepareRequest(List<main.model.Post> postList){
+        PostResponse postResponse = new PostResponse();
         postResponse.setCount(postList.size());
         for (main.model.Post post : postList){
             postResponse.addToPostList(new Post(
