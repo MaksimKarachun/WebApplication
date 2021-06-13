@@ -17,6 +17,20 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
     @Query("select p from Post p " +
             "where moderationStatus = 'ACCEPTED' " +
             "and time < sysdate()" +
-            "and isActive = 1 order by time desc")
+            "and isActive = 1")
     List<Post> findPostsByParamRecent(Pageable pageable);
+
+    @Query("select p, count(p) as commentCount from Post as p " +
+            "left join PostComment as pc on p.id = pc.post.id " +
+            "where p.moderationStatus = 'ACCEPTED' " +
+            "and p.time < sysdate()" +
+            "and p.isActive = 1 group by p.id")
+    List<Post> findPostsByParamPopular(Pageable pageable);
+
+    @Query("select p, count(p) as postLike from Post as p " +
+            "left join PostVote as pv on p.id = pv.post.id " +
+            "where p.moderationStatus = 'ACCEPTED' " +
+            "and p.time < sysdate()" +
+            "and p.isActive = 1 group by p.id")
+    List<Post> findPostsByParamBest(Pageable pageable);
 }
