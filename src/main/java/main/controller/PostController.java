@@ -14,7 +14,12 @@ public class PostController {
     private final PostService postService;
 
     @GetMapping("/api/post")
-    public PostResponse postResponse(@RequestParam int offset, @RequestParam int limit, @RequestParam String mode){
-        return postService.getPosts(offset, limit, mode);
+    public PostResponse postsByParam(@RequestParam int offset, @RequestParam int limit, @RequestParam String mode){
+        return postService.getPostsByParam(offset, limit, mode);
+    }
+
+    @GetMapping("/api/post/search")
+    public PostResponse postsBySearch(@RequestParam int offset, @RequestParam int limit, @RequestParam String query){
+        return postService.getPostsBySearch(offset, limit, query);
     }
 }
