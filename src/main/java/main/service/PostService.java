@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -19,37 +20,46 @@ public class PostService {
         this.postRepository = postRepository;
     }
 
-    public PostResponse getPosts(int offset, int limit, String mode){
+    public PostResponse getPostsByParam(int offset, int limit, String mode){
         int pageNumber = offset / limit;
-        PostResponse postResponse = new PostResponse();
         Pageable pageWithPosts;
-        List<main.model.Post> postList;
+        List<main.model.Post> postList = new ArrayList<>();
         switch (mode) {
             case "recent":
                 pageWithPosts = PageRequest.of(pageNumber, limit, Sort.by("time").descending());
                 postList = postRepository.findPostsByParamRecent(pageWithPosts);
-                prepareRequest(postList);
                 break;
             case "popular":
                 pageWithPosts = PageRequest.of(pageNumber, limit, Sort.by("commentCount").descending());
                 postList = postRepository.findPostsByParamPopular(pageWithPosts);
-                prepareRequest(postList);
                 break;
             case "best":
                 pageWithPosts = PageRequest.of(pageNumber, limit, Sort.by("postLike").descending());
                 postList = postRepository.findPostsByParamBest(pageWithPosts);
-                prepareRequest(postList);
                 break;
             case "early":
                 pageWithPosts = PageRequest.of(pageNumber, limit, Sort.by("time"));
                 postList = postRepository.findPostsByParamRecent(pageWithPosts);
-                prepareRequest(postList);
                 break;
         }
-        return postResponse;
+        return prepareRequest(postList);
     }
 
-    private void prepareRequest(List<main.model.Post> postList){
+    public PostResponse getPostsBySearch(int offset, int limit, String query){
+        if (query.isEmpty() || query.isBlank()){
+            return getPostsByParam(offset, limit, "recent");
+        }
+        else {
+            int pageNumber = offset / limit;
+            Pageable pageWithPosts;
+            pageWithPosts = PageRequest.of(pageNumber, limit, Sort.by("time"));
+            List<main.model.Post> postList;
+            postList = postRepository.findPostsByQuery(pageWithPosts, query);
+            return prepareRequest(postList);
+        }
+    }
+
+    private PostResponse prepareRequest(List<main.model.Post> postList){
         PostResponse postResponse = new PostResponse();
         postResponse.setCount(postList.size());
         for (main.model.Post post : postList){
@@ -64,5 +74,6 @@ public class PostService {
                     post.getPostComments().size(),
                     post.getViewCount()));
         }
+        return postResponse;
     }
 }
