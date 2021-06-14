@@ -61,18 +61,24 @@ public class PostService {
 
     private PostResponse prepareRequest(List<main.model.Post> postList){
         PostResponse postResponse = new PostResponse();
-        postResponse.setCount(postList.size());
-        for (main.model.Post post : postList){
-            postResponse.addToPostList(new Post(
-                    post.getId(),
-                    post.getTime().getTime() / 1000,
-                    new User(post.getUser().getId(), post.getUser().getName()),
-                    post.getTitle(),
-                    post.getText(),
-                    post.getLikeCount(),
-                    post.getDislikeCount(),
-                    post.getPostComments().size(),
-                    post.getViewCount()));
+        int postListSize = postList.size();
+        postResponse.setCount(postListSize);
+        if (postListSize > 0) {
+            for (main.model.Post post : postList) {
+                postResponse.addToPostList(new Post(
+                        post.getId(),
+                        post.getTime().getTime() / 1000,
+                        new User(post.getUser().getId(), post.getUser().getName()),
+                        post.getTitle(),
+                        post.getText(),
+                        post.getLikeCount(),
+                        post.getDislikeCount(),
+                        post.getPostComments().size(),
+                        post.getViewCount()));
+            }
+        }
+        else {
+            postResponse.setPosts(new ArrayList<>());
         }
         return postResponse;
     }
