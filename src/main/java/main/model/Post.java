@@ -59,22 +59,14 @@ public class Post {
     List<PostComment> postComments;
 
     public int getLikeCount(){
-        int likeCount = 0;
-        for (PostVote postvote : postVotes){
-            if (postvote.getValue() == 1){
-                likeCount++;
-            }
-        }
-        return likeCount;
+        return (int) postVotes.stream().filter(x -> x.getValue() == 1).count();
     }
 
     public int getDislikeCount(){
-        int dislikeCount = 0;
-        for (PostVote postvote : postVotes){
-            if (postvote.getValue() == -1){
-                dislikeCount++;
-            }
-        }
-        return dislikeCount;
+        return (int) postVotes.stream().filter(x -> x.getValue() == -1).count();
+    }
+
+    public void incrementViewCount(){
+        viewCount++;
     }
 }

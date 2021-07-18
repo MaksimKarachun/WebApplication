@@ -1,28 +1,25 @@
 package main.service;
 
+import lombok.RequiredArgsConstructor;
 import main.DTO.response.TagResponse;
 import main.DTO.dtoObj.TagCount;
-import main.DTO.dtoObj.Tag;
+import main.DTO.dtoObj.TagDTO;
 import main.repository.TagRepository;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 
 @Service
+@RequiredArgsConstructor
 public class TagService {
 
     private final TagRepository tagRepository;
 
-    public TagService(TagRepository tagRepository) {
-        this.tagRepository = tagRepository;
-    }
-
     public TagResponse getDefaultTagResponse(){
         TagResponse tagResponse = new TagResponse();
         List<TagCount> tagCount = tagRepository.findDefaultTags();
-        for (TagCount tag : tagCount) {
-            tagResponse.addToTagList(new Tag(tag.getName(), tag.getCount() / getMaxCount(tagCount)));
-        }
+        tagCount.forEach( e -> tagResponse.addToTagList(new TagDTO(e.getName(), e.getCount() / getMaxCount(tagCount))));
         return tagResponse;
     }
 
