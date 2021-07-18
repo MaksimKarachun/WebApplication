@@ -5,9 +5,8 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class Tag {
+public class TagDTO {
 
     String  name;
     Double weight;
-
 }

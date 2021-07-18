@@ -2,12 +2,13 @@ package main.DTO.dtoObj;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
-public class User {
+@NoArgsConstructor
+public class UserDTO {
 
     private Integer id;
     private String name;
-
 }

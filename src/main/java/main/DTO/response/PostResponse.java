@@ -3,7 +3,7 @@ package main.DTO.response;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import main.DTO.dtoObj.Post;
+import main.DTO.dtoObj.PostDTO;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,9 +13,9 @@ import java.util.List;
 public class PostResponse {
 
     private Integer count;
-    private List<Post> posts;
+    private List<PostDTO> posts;
 
-    public void addToPostList(Post post){
+    public void addToPostList(PostDTO post){
         if (posts == null) {
             posts = new ArrayList<>();
         }

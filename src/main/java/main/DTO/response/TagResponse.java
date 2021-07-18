@@ -2,7 +2,7 @@ package main.DTO.response;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import main.DTO.dtoObj.Tag;
+import main.DTO.dtoObj.TagDTO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,9 +12,9 @@ import java.util.List;
 @NoArgsConstructor
 public class TagResponse {
 
-    private List<Tag> tags;
+    private List<TagDTO> tags;
 
-    public void addToTagList(Tag tag){
+    public void addToTagList(TagDTO tag){
         if (tags == null){
             tags = new ArrayList<>();
         }
