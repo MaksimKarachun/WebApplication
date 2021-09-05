@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import main.dto.responseDto.RegisterErrorDTO;
 
 @Data
 @AllArgsConstructor

@@ -2,7 +2,6 @@ package main.dto.response;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import main.dto.responseDto.TagDTO;
 
 import java.util.ArrayList;
 import java.util.List;

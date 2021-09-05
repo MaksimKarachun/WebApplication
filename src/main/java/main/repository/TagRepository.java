@@ -1,6 +1,6 @@
 package main.repository;
 
-import main.dto.responseDto.TagCount;
+import main.dto.response.TagCount;
 import main.model.Tag;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;

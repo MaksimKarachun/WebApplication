@@ -2,8 +2,8 @@ package main.service;
 
 import lombok.RequiredArgsConstructor;
 import main.dto.response.TagResponse;
-import main.dto.responseDto.TagCount;
-import main.dto.responseDto.TagDTO;
+import main.dto.response.TagCount;
+import main.dto.response.TagDTO;
 import main.repository.TagRepository;
 import org.springframework.stereotype.Service;
 

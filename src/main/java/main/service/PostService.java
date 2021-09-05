@@ -1,9 +1,7 @@
 package main.service;
 
 import lombok.RequiredArgsConstructor;
-import main.dto.responseDto.*;
-import main.dto.response.PostByIdResponse;
-import main.dto.response.PostResponse;
+import main.dto.response.*;
 import main.exception.PostNotFoundException;
 import main.model.Post;
 import main.model.PostComment;

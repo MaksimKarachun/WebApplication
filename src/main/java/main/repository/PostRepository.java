@@ -1,6 +1,6 @@
 package main.repository;
 
-import main.dto.responseDto.PostInfo;
+import main.dto.response.PostInfo;
 import main.model.Post;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;

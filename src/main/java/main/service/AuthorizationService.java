@@ -3,7 +3,7 @@ package main.service;
 import com.github.cage.Cage;
 import com.github.cage.GCage;
 import lombok.RequiredArgsConstructor;
-import main.dto.responseDto.RegisterErrorDTO;
+import main.dto.response.RegisterErrorDTO;
 import main.dto.request.RegisterRequest;
 import main.dto.response.CaptchaResponse;
 import main.dto.response.RegisterResponse;
