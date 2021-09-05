@@ -1,4 +1,4 @@
-package main.DTO.response;
+package main.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

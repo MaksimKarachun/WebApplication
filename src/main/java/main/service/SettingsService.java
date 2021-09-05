@@ -1,7 +1,7 @@
 package main.service;
 
 import lombok.RequiredArgsConstructor;
-import main.DTO.response.SettingsResponse;
+import main.dto.response.SettingsResponse;
 import main.repository.GlobalSettingsRepository;
 import org.springframework.stereotype.Service;
 

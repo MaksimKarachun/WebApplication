@@ -1,8 +1,8 @@
-package main.DTO.response;
+package main.dto.response;
 
 import lombok.*;
-import main.DTO.dtoObj.CommentDTO;
-import main.DTO.dtoObj.UserDTO;
+import main.dto.responseDto.CommentDTO;
+import main.dto.responseDto.UserDTO;
 import java.util.List;
 
 @Data

@@ -1,4 +1,4 @@
-package main.DTO.dtoObj;
+package main.dto.responseDto;
 
 public interface PostInfo {
 

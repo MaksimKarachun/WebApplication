@@ -1,8 +1,8 @@
 package main.controller;
 
 import lombok.RequiredArgsConstructor;
-import main.DTO.response.PostByIdResponse;
-import main.DTO.response.PostResponse;
+import main.dto.response.PostByIdResponse;
+import main.dto.response.PostResponse;
 import main.exception.PostNotFoundException;
 import main.service.PostService;
 import org.springframework.web.bind.annotation.GetMapping;

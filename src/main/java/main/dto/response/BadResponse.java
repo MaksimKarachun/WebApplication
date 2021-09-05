@@ -1,12 +1,11 @@
-package main.DTO.dtoObj;
+package main.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class TagDTO {
+public class BadResponse {
 
-    String  name;
-    Double weight;
+    String errorMessage;
 }

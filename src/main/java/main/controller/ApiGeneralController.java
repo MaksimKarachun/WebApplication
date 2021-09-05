@@ -1,39 +1,38 @@
 package main.controller;
 
 import lombok.RequiredArgsConstructor;
-import main.DTO.response.*;
-import main.service.PostService;
+import main.dto.response.*;
+import main.service.AuthorizationService;
 import main.service.SettingsService;
 import main.service.TagService;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api")
 @RequiredArgsConstructor
 public class ApiGeneralController {
 
     private final InitResponse initResponse;
     private final SettingsService settingsService;
     private final TagService tagService;
+    private final AuthorizationService authorizationService;
 
-    @GetMapping("/init")
+    @GetMapping("/api/init")
     public InitResponse init(){
         return initResponse;
     }
 
-    @GetMapping("/settings")
+    @GetMapping("/api/settings")
     public SettingsResponse settings(){
         return settingsService.getGlobalSettings();
     }
 
-    @GetMapping("/auth/check")
+    @GetMapping("/api/auth/check")
     public AuthCheckResponse authCheckResponse(){
         return new AuthCheckResponse(false);
     }
 
-    @GetMapping("/tag")
+    @GetMapping("/api/tag")
     public TagResponse tagResponse(){
         return tagService.getDefaultTagResponse();
     }

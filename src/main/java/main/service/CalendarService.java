@@ -1,8 +1,8 @@
 package main.service;
 
 import lombok.RequiredArgsConstructor;
-import main.DTO.dtoObj.PostInfo;
-import main.DTO.response.CalendarResponse;
+import main.dto.responseDto.PostInfo;
+import main.dto.response.CalendarResponse;
 import main.repository.PostRepository;
 import org.springframework.stereotype.Service;
 
