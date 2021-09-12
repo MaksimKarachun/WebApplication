@@ -3,17 +3,26 @@ package main.service;
 import com.github.cage.Cage;
 import com.github.cage.GCage;
 import lombok.RequiredArgsConstructor;
-import main.dto.response.RegisterErrorDTO;
+import main.dto.request.LoginRequest;
+import main.dto.response.*;
 import main.dto.request.RegisterRequest;
-import main.dto.response.CaptchaResponse;
-import main.dto.response.RegisterResponse;
 import main.StringConst.StringConstant;
 import main.exception.DataBaseException;
 import main.model.CaptchaCode;
 import main.model.User;
 import main.repository.CaptchaRepository;
-import main.repository.UsersRepository;
+import main.repository.UserRepository;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.security.Principal;
 import java.util.Base64;
 import java.util.Date;
 
@@ -25,7 +34,42 @@ public class AuthorizationService {
 
     private final StringUtilsService stringUtilsService;
 
-    private final UsersRepository usersRepository;
+    private final UserRepository userRepository;
+
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    private final AuthenticationManager authenticationManager;
+
+
+    public LoginResponse loginUser(LoginRequest loginRequest) {
+        Authentication authentication = authenticationManager
+                .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),
+                        loginRequest.getPassword()));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        org.springframework.security.core.userdetails.User userPrincipal =
+                (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
+        User user = userRepository.findByEmail(userPrincipal.getUsername());
+        LoginUserDTO loginUserDTO = new LoginUserDTO();
+        loginUserDTO.setId(user.getId());
+        loginUserDTO.setName(user.getName());
+        loginUserDTO.setPhoto(user.getPhoto());
+        loginUserDTO.setModeration(user.isModerator());
+        // TODO: 12.09.2021 ModerationCount?
+        loginUserDTO.setModerationCount(0);
+        loginUserDTO.setEmail(user.getEmail());
+        LoginResponse loginResponse = new LoginResponse();
+        loginResponse.setResult(true);
+        loginResponse.setUser(loginUserDTO);
+        return loginResponse;
+    }
+
+    public LogoutResponse logoutUser(HttpServletRequest httpServletRequest) {
+        HttpSession session = httpServletRequest.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+        return new LogoutResponse(true);
+    }
 
     public CaptchaResponse getCaptchaCode() {
         captchaRepository.deleteOldCaptcha();
@@ -54,7 +98,7 @@ public class AuthorizationService {
             error.setCaptcha(StringConstant.CAPTCHA_CODE_ERROR_MESSAGE);
         }
         //проверка повторной регистрации
-        if (usersRepository.findByEmail(userEmail) != null) {
+        if (userRepository.findByEmail(userEmail) != null) {
             registerResponse.setResult(false);
             error.setEmail(StringConstant.USER_ALREADY_REGISTER_ERROR_MESSAGE);
         }
@@ -94,9 +138,9 @@ public class AuthorizationService {
         newUser.setModerator(false);
         newUser.setRegTime(new Date());
         newUser.setName(name);
-        newUser.setPassword(password);
-        usersRepository.save(newUser);
-        if (usersRepository.findById(newUser.getId()).isEmpty()) {
+        newUser.setPassword(bCryptPasswordEncoder.encode(password));
+        userRepository.save(newUser);
+        if (userRepository.findById(newUser.getId()).isEmpty()) {
             throw new DataBaseException(StringConstant.DATA_BASE_ERROR_MESSAGE);
         }
     }

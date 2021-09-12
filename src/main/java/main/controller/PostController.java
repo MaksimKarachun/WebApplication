@@ -5,6 +5,7 @@ import main.dto.response.PostByIdResponse;
 import main.dto.response.PostResponse;
 import main.exception.PostNotFoundException;
 import main.service.PostService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,6 +18,7 @@ public class PostController {
 
     private final PostService postService;
 
+    @PreAuthorize("hasAnyAuthority('user:write')")
     @GetMapping("/api/post")
     public PostResponse postsByParam(@RequestParam int offset, @RequestParam int limit, @RequestParam String mode){
         return postService.getPostsByParam(offset, limit, mode);

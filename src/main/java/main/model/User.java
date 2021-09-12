@@ -38,4 +38,8 @@ public class User {
     @Column(columnDefinition = "TEXT")
     private String photo;
 
+    public Role getRole() {
+        return isModerator ? Role.MODERATOR : Role.USER;
+    }
+
 }

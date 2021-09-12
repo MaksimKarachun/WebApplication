@@ -8,13 +8,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterRequest {
+public class LoginRequest {
 
     @JsonProperty("e_mail")
     private String email;
     private String password;
-    private String name;
-    private String captcha;
-    @JsonProperty("captcha_secret")
-    private String captchaSecret;
 }
