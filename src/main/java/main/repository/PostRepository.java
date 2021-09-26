@@ -2,6 +2,7 @@ package main.repository;
 
 import main.dto.response.PostInfo;
 import main.model.Post;
+import main.model.User;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -116,4 +117,100 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
             "and isActive = 1 " +
             "and id = :id")
     Post getPostById(@Param("id") int id);
+
+    @Query("select p from Post p " +
+        "where p.user.id = :id " +
+        "and isActive = 0")
+    List<Post> getPostsByUserInactive(Pageable pageable, @Param("id") int id);
+
+    @Query("select p from Post p " +
+        "where p.user.id = :id " +
+        "and isActive = 1 " +
+        "and moderationStatus = 'NEW'")
+    List<Post> getPostsByUserPending(Pageable pageable, @Param("id") int id);
+
+    @Query("select p from Post p " +
+        "where p.user.id = :id " +
+        "and isActive = 1 " +
+        "and moderationStatus = 'DECLINED'")
+    List<Post> getPostsByUserDeclined(Pageable pageable, @Param("id") int id);
+
+    @Query("select p from Post p " +
+        "where p.user.id = :id " +
+        "and isActive = 1 " +
+        "and moderationStatus = 'ACCEPTED'")
+    List<Post> getPostsByUserAccepted(Pageable pageable, @Param("id") int id);
+
+    @Query("select count(p) from Post p " +
+        "where p.user.id = :id " +
+        "and isActive = 0")
+    Integer getCountPostsByUserInactive(@Param("id") int id);
+
+    @Query("select count(p) from Post p " +
+        "where p.user.id = :id " +
+        "and isActive = 1 " +
+        "and moderationStatus = 'NEW'")
+    Integer getCountPostsByUserPending(@Param("id") int id);
+
+    @Query("select count(p) from Post p " +
+        "where p.user.id = :id " +
+        "and isActive = 1 " +
+        "and moderationStatus = 'DECLINED'")
+    Integer getCountPostsByUserDeclined(@Param("id") int id);
+
+    @Query("select count(p) from Post p " +
+        "where p.user.id = :id " +
+        "and isActive = 1 " +
+        "and moderationStatus = 'ACCEPTED'")
+    Integer getCountPostsByUserAccepted(@Param("id") int id);
+
+    /**
+     * ======================================================
+     * Получение постов по признаку модерации
+     * ======================================================
+     */
+
+    /**
+     *Получение всех постов которым необходима модерация
+     */
+    @Query("select p from Post p " +
+        "where isActive = 1 " +
+        "and moderationStatus = 'NEW'")
+    List<Post> getModerationNewPosts(Pageable pageable);
+
+    /**
+     *Получение постов отклоненных пользоваетелем
+     */
+    @Query("select p from Post p " +
+        "where isActive = 1 " +
+        "and moderationStatus = 'DECLINED' " +
+        "and moderator_id = :id")
+    List<Post> getModerationDeclinedPosts(Pageable pageable, @Param("id") int id);
+
+    /**
+     *Получение постов утвержденных пользователем
+     */
+    @Query("select p from Post p " +
+        "where isActive = 1 " +
+        "and moderationStatus = 'ACCEPTED' " +
+        "and moderator_id = :id")
+    List<Post> getModerationAcceptedPosts(Pageable pageable, @Param("id") int id);
+
+    @Query("select count(p) from Post p " +
+        "where isActive = 1 " +
+        "and moderationStatus = 'NEW'")
+    Integer getModerationNewPostsCount();
+
+    @Query("select count(p) from Post p " +
+        "where isActive = 1 " +
+        "and moderationStatus = 'DECLINED' " +
+        "and moderator_id = :id")
+    Integer getModerationDeclinedPostsCount(@Param("id") int id);
+
+    @Query("select count(p) from Post p " +
+        "where isActive = 1 " +
+        "and moderationStatus = 'ACCEPTED' " +
+        "and moderator_id = :id")
+    Integer getModerationAcceptedPostsCount(@Param("id") int id);
+
 }

@@ -1,13 +1,17 @@
 package main.service;
 
 import lombok.RequiredArgsConstructor;
+import main.dto.request.AddPostRequest;
 import main.dto.response.*;
 import main.exception.PostNotFoundException;
+import main.model.ModerationStatus;
 import main.model.Post;
 import main.model.PostComment;
 import main.model.Tag;
 import main.model.User;
 import main.repository.PostRepository;
+import main.repository.TagRepository;
+import main.repository.UserRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -23,6 +27,10 @@ import java.util.stream.Collectors;
 public class PostService {
 
     private final PostRepository postRepository;
+
+    private final UserRepository userRepository;
+
+    private final TagRepository tagRepository;
 
     public PostResponse getPostsByParam(int offset, int limit, String mode){
         int pageNumber = offset / limit;
@@ -46,7 +54,7 @@ public class PostService {
                 postList = postRepository.findPostsByParamRecent(pageWithPosts);
                 break;
         }
-        return prepareResponse(postList, postRepository.getPostCount());
+        return preparePostResponse(postList, postRepository.getPostCount());
     }
 
     public PostResponse getPostsBySearch(int offset, int limit, String query){
@@ -57,7 +65,7 @@ public class PostService {
             int pageNumber = offset / limit;
             Pageable pageWithPosts = PageRequest.of(pageNumber, limit, Sort.by("time"));
             List<Post> postList = postRepository.findPostsByQuery(pageWithPosts, query);
-            return prepareResponse(postList, postList.size());
+            return preparePostResponse(postList, postList.size());
         }
     }
 
@@ -65,14 +73,14 @@ public class PostService {
         int pageNumber = offset / limit;
         Pageable pageWithPosts = PageRequest.of(pageNumber, limit, Sort.by("time"));
         List<Post> postList = postRepository.findPostsByDate(pageWithPosts, date);
-        return prepareResponse(postList, postList.size());
+        return preparePostResponse(postList, postList.size());
     }
 
     public PostResponse getPostsByTag(int offset, int limit, String tag){
         int pageNumber = offset / limit;
         Pageable pageWithPosts = PageRequest.of(pageNumber, limit, Sort.by("time"));
         List<Post> postList = postRepository.findPostsByTag(pageWithPosts, tag);
-        return prepareResponse(postList, postList.size());
+        return preparePostResponse(postList, postList.size());
     }
 
     public PostByIdResponse getPostById(int id) throws PostNotFoundException{
@@ -82,7 +90,73 @@ public class PostService {
         return preparePostByIdResponse(post);
     }
 
-    private PostResponse prepareResponse(List<main.model.Post> postList, int postCount){
+    public PostResponse getMyPosts(int offset, int limit, String status, String userEmail) {
+        User user = userRepository.findByEmail(userEmail);
+        int pageNumber = offset / limit;
+        Pageable pageWithPosts;
+        List<main.model.Post> postList = new ArrayList<>();
+        int count = 0;
+        pageWithPosts = PageRequest.of(pageNumber, limit, Sort.by("time").descending());
+        switch (status) {
+            case "pending":
+                postList = postRepository.getPostsByUserPending(pageWithPosts, user.getId());
+                count = postRepository.getCountPostsByUserPending(user.getId());
+                break;
+            case "inactive":
+                postList = postRepository.getPostsByUserInactive(pageWithPosts, user.getId());
+                count = postRepository.getCountPostsByUserInactive(user.getId());
+                break;
+            case "accepted":
+                postList = postRepository.getPostsByUserAccepted(pageWithPosts, user.getId());
+                count = postRepository.getCountPostsByUserDeclined(user.getId());
+                break;
+            case "declined":
+                postList = postRepository.getPostsByUserDeclined(pageWithPosts, user.getId());
+                count = postRepository.getCountPostsByUserDeclined(user.getId());
+                break;
+        }
+        return preparePostResponse(postList, count);
+    }
+
+    public AddPostResponse addNewPost(AddPostRequest addPostRequest, String userEmail) {
+        User user = userRepository.findByEmail(userEmail);
+        Post post = new Post();
+        post.setActive(addPostRequest.getActive());
+        post.setModerationStatus(ModerationStatus.NEW);
+        post.setUser(user);
+        post.setTime(new Date(addPostRequest.getTimestamp() * 1000));
+        post.setTitle(addPostRequest.getTitle());
+        post.setText(addPostRequest.getText());
+        post.setViewCount(0);
+        post.setTags(getTagList(addPostRequest.getTags()));
+        postRepository.save(post);
+        return new AddPostResponse(true);
+    }
+
+    public PostResponse getModerationPosts(int offset, int limit, String status, String userEmail) {
+        User user = userRepository.findByEmail(userEmail);
+        int pageNumber = offset / limit;
+        Pageable pageWithPosts = PageRequest.of(pageNumber, limit, Sort.by("time").descending());
+        List<main.model.Post> postList = new ArrayList<>();
+        int count = 0;
+        switch (status) {
+            case "new":
+                postList = postRepository.getModerationNewPosts(pageWithPosts);
+                count = postRepository.getModerationNewPostsCount();
+                break;
+            case "declined":
+                postList = postRepository.getModerationDeclinedPosts(pageWithPosts, user.getId());
+                count = postRepository.getModerationDeclinedPostsCount(user.getId());
+                break;
+            case "accepted":
+                postList = postRepository.getModerationAcceptedPosts(pageWithPosts, user.getId());
+                count = postRepository.getModerationAcceptedPostsCount(user.getId());
+                break;
+        }
+        return preparePostResponse(postList, count);
+    }
+
+    private PostResponse preparePostResponse(List<main.model.Post> postList, int postCount){
         PostResponse postResponse = new PostResponse();
         postResponse.setCount(postCount);
         if (postCount > 0) {
@@ -131,7 +205,6 @@ public class PostService {
                                                               postComment.getText(),
                                                               userForCommentDTO));
         }
-
         //Добавление имен тегов поста в postByIdResponse в нужном формате: Tag -> Tag.getName()
         List<String> tagName = post.getTags().stream()
                                              .map(Tag::getName)
@@ -139,5 +212,19 @@ public class PostService {
         postByIdResponse.setTags(new ArrayList<>());
         postByIdResponse.getTags().addAll(tagName);
        return postByIdResponse;
+    }
+
+    private ArrayList<Tag> getTagList(List<String> tagsName) {
+        ArrayList<Tag> tagList = new ArrayList<>();
+        for (String tagName : tagsName) {
+            Tag tag = tagRepository.findByName(tagName);
+            if (tag == null) {
+                tag = new Tag();
+                tag.setName(tagName);
+                tagRepository.save(tag);
+            }
+            tagList.add(tag);
+        }
+        return tagList;
     }
 }

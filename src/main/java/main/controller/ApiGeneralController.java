@@ -27,11 +27,6 @@ public class ApiGeneralController {
         return settingsService.getGlobalSettings();
     }
 
-    @GetMapping("/api/auth/check")
-    public AuthCheckResponse authCheckResponse(){
-        return new AuthCheckResponse(false);
-    }
-
     @GetMapping("/api/tag")
     public TagResponse tagResponse(){
         return tagService.getDefaultTagResponse();

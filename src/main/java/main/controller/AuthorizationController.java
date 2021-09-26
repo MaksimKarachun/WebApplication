@@ -1,9 +1,13 @@
 package main.controller;
 
 
+import java.security.Principal;
 import lombok.RequiredArgsConstructor;
+import main.dto.request.LoginRequest;
 import main.dto.request.RegisterRequest;
 import main.dto.response.CaptchaResponse;
+import main.dto.response.LoginResponse;
+import main.dto.response.LogoutResponse;
 import main.dto.response.RegisterResponse;
 import main.StringConst.StringConstant;
 import main.exception.DataBaseException;
@@ -14,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.ValidationException;
 
@@ -22,6 +27,22 @@ import javax.validation.ValidationException;
 public class AuthorizationController {
 
     private final AuthorizationService authorizationService;
+
+    @PostMapping(value = "/api/auth/login",
+            consumes = "application/json",
+            produces = "application/json")
+    public LoginResponse login(@Valid @RequestBody LoginRequest loginRequest) {
+        return authorizationService.loginUser(loginRequest);
+    }
+
+    @GetMapping("/api/auth/check")
+    public LoginResponse authCheckResponse(Principal principal){
+        if (principal == null) {
+            return new LoginResponse(false);
+        }
+        return authorizationService.authCheck(principal);
+    }
+
 
     @GetMapping("/api/auth/captcha")
     public CaptchaResponse getCaptcha() throws DataBaseException {
