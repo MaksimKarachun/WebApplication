@@ -7,9 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthCheckResponse {
+public class AddPostErrorDTO {
 
-    private boolean result;
-/*    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private User user;*/
+  private String title;
+  private String text;
 }

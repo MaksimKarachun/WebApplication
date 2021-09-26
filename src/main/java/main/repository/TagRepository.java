@@ -2,10 +2,12 @@ package main.repository;
 
 import main.dto.response.TagCount;
 import main.model.Tag;
+import net.bytebuddy.dynamic.DynamicType.Builder.FieldDefinition.Optional;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
+import org.springframework.data.repository.query.Param;
 
 public interface TagRepository extends CrudRepository<Tag, Integer> {
 
@@ -22,4 +24,9 @@ public interface TagRepository extends CrudRepository<Tag, Integer> {
             "and p.time < sysdate()" +
             "group by t.name")
     List<TagCount> findDefaultTags();
+
+    @Query("select t " +
+            "from Tag t " +
+            "where t.name = :name")
+    Tag findByName(@Param("name") String name);
 }

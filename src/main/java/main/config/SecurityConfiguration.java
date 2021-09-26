@@ -1,6 +1,10 @@
 package main.config;
 
-import lombok.RequiredArgsConstructor;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.PrintWriter;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import main.dto.response.LoginResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -13,6 +17,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 
 @Configuration
 @EnableWebSecurity
@@ -33,7 +38,21 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .anyRequest().authenticated()
             .and()
             .formLogin().disable()
-            .httpBasic() ;
+            .logout(logout -> logout
+                .permitAll()
+                .deleteCookies("JSESSIONID")
+                .logoutUrl("/api/auth/logout")
+                .logoutSuccessUrl("/api/auth/login")
+                .logoutSuccessHandler((httpServletRequest, httpServletResponse, authentication) -> {
+                  httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+                  ObjectMapper objectMapper = new ObjectMapper();
+                  PrintWriter out = httpServletResponse.getWriter();
+                  httpServletResponse.setContentType("application/json");
+                  httpServletResponse.setCharacterEncoding("UTF-8");
+                  out.print(objectMapper.writeValueAsString(new LoginResponse(true)));
+                  out.flush();
+                }))
+            .httpBasic().disable();
     }
 
     @Bean

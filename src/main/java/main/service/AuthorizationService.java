@@ -2,6 +2,7 @@ package main.service;
 
 import com.github.cage.Cage;
 import com.github.cage.GCage;
+import com.mysql.cj.log.Log;
 import lombok.RequiredArgsConstructor;
 import main.dto.request.LoginRequest;
 import main.dto.response.*;
@@ -48,19 +49,7 @@ public class AuthorizationService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         org.springframework.security.core.userdetails.User userPrincipal =
                 (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
-        User user = userRepository.findByEmail(userPrincipal.getUsername());
-        LoginUserDTO loginUserDTO = new LoginUserDTO();
-        loginUserDTO.setId(user.getId());
-        loginUserDTO.setName(user.getName());
-        loginUserDTO.setPhoto(user.getPhoto());
-        loginUserDTO.setModeration(user.isModerator());
-        // TODO: 12.09.2021 ModerationCount?
-        loginUserDTO.setModerationCount(0);
-        loginUserDTO.setEmail(user.getEmail());
-        LoginResponse loginResponse = new LoginResponse();
-        loginResponse.setResult(true);
-        loginResponse.setUser(loginUserDTO);
-        return loginResponse;
+        return prepareLoginResponse(userPrincipal.getUsername());
     }
 
     public LogoutResponse logoutUser(HttpServletRequest httpServletRequest) {
@@ -69,6 +58,10 @@ public class AuthorizationService {
             session.invalidate();
         }
         return new LogoutResponse(true);
+    }
+
+    public LoginResponse authCheck(Principal userPrincipal) {
+        return prepareLoginResponse(userPrincipal.getName());
     }
 
     public CaptchaResponse getCaptchaCode() {
@@ -143,5 +136,21 @@ public class AuthorizationService {
         if (userRepository.findById(newUser.getId()).isEmpty()) {
             throw new DataBaseException(StringConstant.DATA_BASE_ERROR_MESSAGE);
         }
+    }
+
+    private LoginResponse prepareLoginResponse (String userEmail) {
+        User user = userRepository.findByEmail(userEmail);
+        LoginUserDTO loginUserDTO = new LoginUserDTO();
+        loginUserDTO.setId(user.getId());
+        loginUserDTO.setName(user.getName());
+        loginUserDTO.setPhoto(user.getPhoto());
+        loginUserDTO.setModeration(user.isModerator());
+        // TODO: 12.09.2021 ModerationCount?
+        loginUserDTO.setModerationCount(0);
+        loginUserDTO.setEmail(user.getEmail());
+        LoginResponse loginResponse = new LoginResponse();
+        loginResponse.setResult(true);
+        loginResponse.setUser(loginUserDTO);
+        return loginResponse;
     }
 }

@@ -1,6 +1,7 @@
 package main.controller;
 
 
+import java.security.Principal;
 import lombok.RequiredArgsConstructor;
 import main.dto.request.LoginRequest;
 import main.dto.request.RegisterRequest;
@@ -34,9 +35,12 @@ public class AuthorizationController {
         return authorizationService.loginUser(loginRequest);
     }
 
-    @GetMapping("/api/auth/logout")
-    public LogoutResponse logout(HttpServletRequest httpServletRequest) {
-        return authorizationService.logoutUser(httpServletRequest);
+    @GetMapping("/api/auth/check")
+    public LoginResponse authCheckResponse(Principal principal){
+        if (principal == null) {
+            return new LoginResponse(false);
+        }
+        return authorizationService.authCheck(principal);
     }
 
 
