@@ -12,6 +12,7 @@ import main.model.User;
 import main.repository.PostRepository;
 import main.repository.TagRepository;
 import main.repository.UserRepository;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -32,29 +33,36 @@ public class PostService {
 
     private final TagRepository tagRepository;
 
+    /**
+     * Получение постов в зависимости от переданного параметра mode.
+     * Модификатор по умолчанию "recent".
+     */
     public PostResponse getPostsByParam(int offset, int limit, String mode){
         int pageNumber = offset / limit;
         Pageable pageWithPosts;
-        List<main.model.Post> postList = new ArrayList<>();
+        Page<Post> postPage;
         switch (mode) {
-            case "recent":
-                pageWithPosts = PageRequest.of(pageNumber, limit, Sort.by("time").descending());
-                postList = postRepository.findPostsByParamRecent(pageWithPosts);
-                break;
             case "popular":
                 pageWithPosts = PageRequest.of(pageNumber, limit, Sort.by("commentCount").descending());
-                postList = postRepository.findPostsByParamPopular(pageWithPosts);
+                postPage = Optional.of(postRepository.findPostsByParamPopular(pageWithPosts))
+                    .orElseThrow(() -> new RuntimeException("Не удалось получить данные из БД."));
                 break;
             case "best":
                 pageWithPosts = PageRequest.of(pageNumber, limit, Sort.by("postLike").descending());
-                postList = postRepository.findPostsByParamBest(pageWithPosts);
+                postPage = Optional.of(postRepository.findPostsByParamBest(pageWithPosts))
+                    .orElseThrow(() -> new RuntimeException("Не удалось получить данные из БД."));
                 break;
             case "early":
                 pageWithPosts = PageRequest.of(pageNumber, limit, Sort.by("time"));
-                postList = postRepository.findPostsByParamRecent(pageWithPosts);
+                postPage = Optional.of(postRepository.findPostsByParamRecent(pageWithPosts))
+                    .orElseThrow(() -> new RuntimeException("Не удалось получить данные из БД."));
                 break;
+            default:
+                pageWithPosts = PageRequest.of(pageNumber, limit, Sort.by("time").descending());
+                postPage = Optional.of(postRepository.findPostsByParamRecent(pageWithPosts))
+                    .orElseThrow(() -> new RuntimeException("Не удалось получить данные из БД."));
         }
-        return preparePostResponse(postList, postRepository.getPostCount());
+        return preparePostResponse(postPage.toList(), postPage.getTotalElements());
     }
 
     public PostResponse getPostsBySearch(int offset, int limit, String query){
@@ -64,7 +72,8 @@ public class PostService {
         else {
             int pageNumber = offset / limit;
             Pageable pageWithPosts = PageRequest.of(pageNumber, limit, Sort.by("time"));
-            List<Post> postList = postRepository.findPostsByQuery(pageWithPosts, query);
+            List<Post> postList = Optional.of(postRepository.findPostsByQuery(pageWithPosts, query))
+                .orElseThrow(() -> new RuntimeException("Не удалось получить данные из БД."));
             return preparePostResponse(postList, postList.size());
         }
     }
@@ -72,50 +81,56 @@ public class PostService {
     public PostResponse getPostsByDate(int offset, int limit, String date){
         int pageNumber = offset / limit;
         Pageable pageWithPosts = PageRequest.of(pageNumber, limit, Sort.by("time"));
-        List<Post> postList = postRepository.findPostsByDate(pageWithPosts, date);
+        List<Post> postList = Optional.of(postRepository.findPostsByDate(pageWithPosts, date))
+            .orElseThrow(() -> new RuntimeException("Не удалось получить данные из БД."));
         return preparePostResponse(postList, postList.size());
     }
 
     public PostResponse getPostsByTag(int offset, int limit, String tag){
         int pageNumber = offset / limit;
         Pageable pageWithPosts = PageRequest.of(pageNumber, limit, Sort.by("time"));
-        List<Post> postList = postRepository.findPostsByTag(pageWithPosts, tag);
+        List<Post> postList = Optional.of(postRepository.findPostsByTag(pageWithPosts, tag))
+            .orElseThrow(() -> new RuntimeException("Не удалось получить данные из БД."));
         return preparePostResponse(postList, postList.size());
     }
 
-    public PostByIdResponse getPostById(int id) throws PostNotFoundException{
-        Post post = Optional.of(postRepository.getPostById(id)).orElseThrow(() -> new PostNotFoundException(id));
+    // TODO: 06.10.2021 Уточнить необходимость кастомного исключения 
+    public PostByIdResponse getPostById(int id) {
+        Post post = Optional.of(postRepository.getPostById(id))
+            .orElseThrow(() -> new PostNotFoundException(id));
         post.incrementViewCount();
         postRepository.save(post);
         return preparePostByIdResponse(post);
     }
 
+    /**
+     * Получение постов текущего пользователя.
+     * Модификатор по умолчанию "pending".
+     */
     public PostResponse getMyPosts(int offset, int limit, String status, String userEmail) {
         User user = userRepository.findByEmail(userEmail);
         int pageNumber = offset / limit;
         Pageable pageWithPosts;
-        List<main.model.Post> postList = new ArrayList<>();
-        int count = 0;
+        Page<Post> postPage;
         pageWithPosts = PageRequest.of(pageNumber, limit, Sort.by("time").descending());
         switch (status) {
-            case "pending":
-                postList = postRepository.getPostsByUserPending(pageWithPosts, user.getId());
-                count = postRepository.getCountPostsByUserPending(user.getId());
-                break;
             case "inactive":
-                postList = postRepository.getPostsByUserInactive(pageWithPosts, user.getId());
-                count = postRepository.getCountPostsByUserInactive(user.getId());
+                postPage = Optional.of(postRepository.getPostsByUserInactive(pageWithPosts, user.getId()))
+                    .orElseThrow(() -> new RuntimeException("Не удалось получить данные из БД."));
                 break;
             case "accepted":
-                postList = postRepository.getPostsByUserAccepted(pageWithPosts, user.getId());
-                count = postRepository.getCountPostsByUserDeclined(user.getId());
+                postPage = Optional.of(postRepository.getPostsByUserAccepted(pageWithPosts, user.getId()))
+                    .orElseThrow(() -> new RuntimeException("Не удалось получить данные из БД."));
                 break;
             case "declined":
-                postList = postRepository.getPostsByUserDeclined(pageWithPosts, user.getId());
-                count = postRepository.getCountPostsByUserDeclined(user.getId());
+                postPage = postRepository.getPostsByUserDeclined(pageWithPosts, user.getId());
+                break;
+            default:
+                postPage = Optional.of(postRepository.getPostsByUserPending(pageWithPosts, user.getId()))
+                    .orElseThrow(() -> new RuntimeException("Не удалось получить данные из БД."));
                 break;
         }
-        return preparePostResponse(postList, count);
+        return preparePostResponse(postPage.toList(), postPage.getTotalElements());
     }
 
     public AddPostResponse addNewPost(AddPostRequest addPostRequest, String userEmail) {
@@ -133,30 +148,33 @@ public class PostService {
         return new AddPostResponse(true);
     }
 
+    /**
+     * Получение постов на модерацию..
+     * Модификатор по умолчанию "new".
+     */
     public PostResponse getModerationPosts(int offset, int limit, String status, String userEmail) {
         User user = userRepository.findByEmail(userEmail);
         int pageNumber = offset / limit;
         Pageable pageWithPosts = PageRequest.of(pageNumber, limit, Sort.by("time").descending());
-        List<main.model.Post> postList = new ArrayList<>();
-        int count = 0;
+        Page<Post> postPage;
         switch (status) {
-            case "new":
-                postList = postRepository.getModerationNewPosts(pageWithPosts);
-                count = postRepository.getModerationNewPostsCount();
-                break;
             case "declined":
-                postList = postRepository.getModerationDeclinedPosts(pageWithPosts, user.getId());
-                count = postRepository.getModerationDeclinedPostsCount(user.getId());
+                postPage = Optional.of(postRepository.getModerationDeclinedPosts(pageWithPosts, user.getId()))
+                    .orElseThrow(() -> new RuntimeException("Не удалось получить данные из БД"));
                 break;
             case "accepted":
-                postList = postRepository.getModerationAcceptedPosts(pageWithPosts, user.getId());
-                count = postRepository.getModerationAcceptedPostsCount(user.getId());
+                postPage = Optional.of(postRepository.getModerationAcceptedPosts(pageWithPosts, user.getId()))
+                    .orElseThrow(() -> new RuntimeException("Не удалось получить данные из БД."));
+                break;
+            default:
+                postPage = Optional.of(postRepository.getModerationNewPosts(pageWithPosts))
+                    .orElseThrow(() -> new RuntimeException("Не удалось получить данные из БД."));
                 break;
         }
-        return preparePostResponse(postList, count);
+        return preparePostResponse(postPage.toList(), postPage.getTotalElements());
     }
 
-    private PostResponse preparePostResponse(List<main.model.Post> postList, int postCount){
+    private PostResponse preparePostResponse(List<main.model.Post> postList, long postCount){
         PostResponse postResponse = new PostResponse();
         postResponse.setCount(postCount);
         if (postCount > 0) {

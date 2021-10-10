@@ -2,18 +2,17 @@ package main.service;
 
 import com.github.cage.Cage;
 import com.github.cage.GCage;
-import com.mysql.cj.log.Log;
 import lombok.RequiredArgsConstructor;
 import main.dto.request.LoginRequest;
 import main.dto.response.*;
 import main.dto.request.RegisterRequest;
 import main.StringConst.StringConstant;
+import main.exception.LoginException;
 import main.exception.DataBaseException;
 import main.model.CaptchaCode;
 import main.model.User;
 import main.repository.CaptchaRepository;
 import main.repository.UserRepository;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -42,14 +41,20 @@ public class AuthorizationService {
     private final AuthenticationManager authenticationManager;
 
 
-    public LoginResponse loginUser(LoginRequest loginRequest) {
-        Authentication authentication = authenticationManager
+    public LoginResponse loginUser(LoginRequest loginRequest) throws LoginException {
+        try {
+            Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),
-                        loginRequest.getPassword()));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        org.springframework.security.core.userdetails.User userPrincipal =
+                    loginRequest.getPassword()));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            org.springframework.security.core.userdetails.User userPrincipal =
                 (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
-        return prepareLoginResponse(userPrincipal.getUsername());
+            return prepareLoginResponse(userPrincipal.getUsername());
+        }
+        catch (Exception e) {
+            // TODO: 10.10.2021 Добавить запись в логи
+        }
+        throw new LoginException();
     }
 
     public LogoutResponse logoutUser(HttpServletRequest httpServletRequest) {
@@ -94,11 +99,6 @@ public class AuthorizationService {
         if (userRepository.findByEmail(userEmail) != null) {
             registerResponse.setResult(false);
             error.setEmail(StringConstant.USER_ALREADY_REGISTER_ERROR_MESSAGE);
-        }
-        //проверка имени пользователя
-        if (!stringUtilsService.checkRegisterName(name)) {
-            registerResponse.setResult(false);
-            error.setName(StringConstant.USER_NAME_ERROR_MESSAGE);
         }
         //добавление нового польхователя в БД при отсутсвии ошибок
         if (registerResponse.getResult()) {
