@@ -3,6 +3,7 @@ package main.repository;
 import main.dto.response.PostInfo;
 import main.model.Post;
 import main.model.User;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -31,7 +32,7 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
             "where moderationStatus = 'ACCEPTED' " +
             "and time < sysdate()" +
             "and isActive = 1")
-    List<Post> findPostsByParamRecent(Pageable pageable);
+    Page<Post> findPostsByParamRecent(Pageable pageable);
 
     /**
      * Метод для модификатора popular:
@@ -42,7 +43,7 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
             "where p.moderationStatus = 'ACCEPTED' " +
             "and p.time < sysdate()" +
             "and p.isActive = 1 group by p.id")
-    List<Post> findPostsByParamPopular(Pageable pageable);
+    Page<Post> findPostsByParamPopular(Pageable pageable);
 
     /**
      * Метод для модификатора best:
@@ -53,7 +54,7 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
             "where p.moderationStatus = 'ACCEPTED' " +
             "and p.time < sysdate()" +
             "and p.isActive = 1 group by p.id")
-    List<Post> findPostsByParamBest(Pageable pageable);
+    Page<Post> findPostsByParamBest(Pageable pageable);
 
     /**
      * Поиск постов по запросу в строке поиска
@@ -121,48 +122,25 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
     @Query("select p from Post p " +
         "where p.user.id = :id " +
         "and isActive = 0")
-    List<Post> getPostsByUserInactive(Pageable pageable, @Param("id") int id);
+    Page<Post> getPostsByUserInactive(Pageable pageable, @Param("id") int id);
 
     @Query("select p from Post p " +
         "where p.user.id = :id " +
         "and isActive = 1 " +
         "and moderationStatus = 'NEW'")
-    List<Post> getPostsByUserPending(Pageable pageable, @Param("id") int id);
+    Page<Post> getPostsByUserPending(Pageable pageable, @Param("id") int id);
 
     @Query("select p from Post p " +
         "where p.user.id = :id " +
         "and isActive = 1 " +
         "and moderationStatus = 'DECLINED'")
-    List<Post> getPostsByUserDeclined(Pageable pageable, @Param("id") int id);
+    Page<Post> getPostsByUserDeclined(Pageable pageable, @Param("id") int id);
 
     @Query("select p from Post p " +
         "where p.user.id = :id " +
         "and isActive = 1 " +
         "and moderationStatus = 'ACCEPTED'")
-    List<Post> getPostsByUserAccepted(Pageable pageable, @Param("id") int id);
-
-    @Query("select count(p) from Post p " +
-        "where p.user.id = :id " +
-        "and isActive = 0")
-    Integer getCountPostsByUserInactive(@Param("id") int id);
-
-    @Query("select count(p) from Post p " +
-        "where p.user.id = :id " +
-        "and isActive = 1 " +
-        "and moderationStatus = 'NEW'")
-    Integer getCountPostsByUserPending(@Param("id") int id);
-
-    @Query("select count(p) from Post p " +
-        "where p.user.id = :id " +
-        "and isActive = 1 " +
-        "and moderationStatus = 'DECLINED'")
-    Integer getCountPostsByUserDeclined(@Param("id") int id);
-
-    @Query("select count(p) from Post p " +
-        "where p.user.id = :id " +
-        "and isActive = 1 " +
-        "and moderationStatus = 'ACCEPTED'")
-    Integer getCountPostsByUserAccepted(@Param("id") int id);
+    Page<Post> getPostsByUserAccepted(Pageable pageable, @Param("id") int id);
 
     /**
      * ======================================================
@@ -176,7 +154,7 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
     @Query("select p from Post p " +
         "where isActive = 1 " +
         "and moderationStatus = 'NEW'")
-    List<Post> getModerationNewPosts(Pageable pageable);
+    Page<Post> getModerationNewPosts(Pageable pageable);
 
     /**
      *Получение постов отклоненных пользоваетелем
@@ -185,7 +163,7 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
         "where isActive = 1 " +
         "and moderationStatus = 'DECLINED' " +
         "and moderator_id = :id")
-    List<Post> getModerationDeclinedPosts(Pageable pageable, @Param("id") int id);
+    Page<Post> getModerationDeclinedPosts(Pageable pageable, @Param("id") int id);
 
     /**
      *Получение постов утвержденных пользователем
@@ -194,23 +172,5 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
         "where isActive = 1 " +
         "and moderationStatus = 'ACCEPTED' " +
         "and moderator_id = :id")
-    List<Post> getModerationAcceptedPosts(Pageable pageable, @Param("id") int id);
-
-    @Query("select count(p) from Post p " +
-        "where isActive = 1 " +
-        "and moderationStatus = 'NEW'")
-    Integer getModerationNewPostsCount();
-
-    @Query("select count(p) from Post p " +
-        "where isActive = 1 " +
-        "and moderationStatus = 'DECLINED' " +
-        "and moderator_id = :id")
-    Integer getModerationDeclinedPostsCount(@Param("id") int id);
-
-    @Query("select count(p) from Post p " +
-        "where isActive = 1 " +
-        "and moderationStatus = 'ACCEPTED' " +
-        "and moderator_id = :id")
-    Integer getModerationAcceptedPostsCount(@Param("id") int id);
-
+    Page<Post> getModerationAcceptedPosts(Pageable pageable, @Param("id") int id);
 }

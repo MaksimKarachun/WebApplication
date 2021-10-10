@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 public class PostResponse {
 
-    private Integer count;
+    private Long count;
     private List<PostDTO> posts;
 
     public void addToPostList(PostDTO post){

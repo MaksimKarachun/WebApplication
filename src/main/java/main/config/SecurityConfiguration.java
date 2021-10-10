@@ -3,7 +3,6 @@ package main.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.PrintWriter;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import main.dto.response.LoginResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
