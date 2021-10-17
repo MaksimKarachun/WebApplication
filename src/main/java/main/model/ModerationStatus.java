@@ -1,7 +1,7 @@
 package main.model;
 
 public enum ModerationStatus {
-    NEW,
-    DECLINED,
-    ACCEPTED
+  NEW,
+  DECLINED,
+  ACCEPTED
 }

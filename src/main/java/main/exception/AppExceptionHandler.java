@@ -4,13 +4,16 @@ package main.exception;
 import main.dto.response.AddPostErrorDTO;
 import main.dto.response.AddPostResponse;
 import main.dto.response.BadResponse;
+import main.dto.response.EditPostErrorDTO;
+import main.dto.response.EditPostResponse;
 import main.dto.response.LoginResponse;
+import main.dto.response.ModerationPostResponse;
 import main.dto.response.RegisterErrorDTO;
 import main.dto.response.RegisterResponse;
+import main.dto.response.UploadImageErrorDto;
+import main.dto.response.UploadImageErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -38,6 +41,21 @@ public class AppExceptionHandler {
         return new ResponseEntity<>(addPostResponse, HttpStatus.OK);
     }
 
+    @ExceptionHandler(EditPostValidationException.class)
+    public ResponseEntity<EditPostResponse> editPostValidationExceptionHandler(EditPostValidationException exception) {
+        EditPostResponse editPostResponse = new EditPostResponse(false);
+        EditPostErrorDTO editPostErrorDTO = new EditPostErrorDTO();
+        exception.errorList.getFieldErrors().forEach(fieldError -> {
+            if (fieldError.getField().equals("text")) {
+                editPostErrorDTO.setText(fieldError.getDefaultMessage());
+            } else {
+                editPostErrorDTO.setTitle(fieldError.getDefaultMessage());
+            }
+        });
+        editPostResponse.setErrors(editPostErrorDTO);
+        return new ResponseEntity<>(editPostResponse, HttpStatus.OK);
+    }
+
     @ExceptionHandler(RegisterValidationException.class)
     public ResponseEntity<RegisterResponse> registerValidationExceptionHandler(RegisterValidationException exception) {
         RegisterResponse registerResponse = new RegisterResponse();
@@ -54,10 +72,13 @@ public class AppExceptionHandler {
         return new ResponseEntity<>(registerResponse, HttpStatus.OK);
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<BadResponse> runtimeExceptionHandler(RuntimeException exception) {
-        return new ResponseEntity<>(new BadResponse(exception.getMessage()),
-            HttpStatus.INTERNAL_SERVER_ERROR);
+    @ExceptionHandler(UploadImageException.class)
+    public ResponseEntity<UploadImageErrorResponse> notAllowedImageTypeException(
+        UploadImageException exception){
+        UploadImageErrorResponse response = new UploadImageErrorResponse();
+        response.setResult(false);
+        response.setErrors(new UploadImageErrorDto(exception.getMessage()));
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(LoginException.class)
@@ -65,4 +86,14 @@ public class AppExceptionHandler {
         return new ResponseEntity<>(new LoginResponse(false), HttpStatus.OK);
     }
 
+    @ExceptionHandler(ModerationPostException.class)
+    public ResponseEntity<ModerationPostResponse> moderationPostExceptionHandler() {
+        return new ResponseEntity<>(new ModerationPostResponse(false), HttpStatus.OK);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<BadResponse> runtimeExceptionHandler(RuntimeException exception) {
+        return new ResponseEntity<>(new BadResponse(exception.getMessage()),
+            HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }

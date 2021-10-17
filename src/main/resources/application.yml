@@ -1,4 +1,7 @@
 #connection parameters
+server:
+  port: 8085
+
 spring:
   datasource:
     driverClassName: com.mysql.cj.jdbc.Driver
@@ -12,6 +15,14 @@ spring:
   liquibase:
     change-log: 'classpath:db/changelog/db.changelog-master.yaml'
     enabled: true
+  servlet:
+    multipart:
+      max-file-size: 1MB
+      max-request-size: 5MB
+
+upload:
+  directory: '/upload/'
+  path: '/Users/maksim/Documents/IdeaProjects/diplom/WebApplication/upload/'
 
 #default parameters for api/init
 blog:
@@ -21,6 +32,3 @@ blog:
   email: mail@mail.ru
   copyright: Karachun Maksim
   copyrightFrom: 2021
-
-server:
-  port: 8085

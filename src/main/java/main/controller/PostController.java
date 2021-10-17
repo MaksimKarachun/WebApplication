@@ -3,10 +3,13 @@ package main.controller;
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;
 import main.dto.request.AddPostRequest;
+import main.dto.request.EditPostRequest;
 import main.dto.response.AddPostResponse;
+import main.dto.response.EditPostResponse;
 import main.dto.response.PostByIdResponse;
 import main.dto.response.PostResponse;
 import main.exception.AddNewPostValidationException;
+import main.exception.EditPostValidationException;
 import main.exception.PostNotFoundException;
 import main.service.PostService;
 import org.springframework.http.HttpStatus;
@@ -16,6 +19,7 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,7 +34,7 @@ public class PostController {
 
   @GetMapping("/api/post")
   public PostResponse postsByParam(@RequestParam int offset, @RequestParam int limit,
-      @RequestParam String mode){
+      @RequestParam String mode) {
     return postService.getPostsByParam(offset, limit, mode);
   }
 
@@ -53,8 +57,8 @@ public class PostController {
   }
 
   @GetMapping("/api/post/{id}")
-  public PostByIdResponse postsByTag(@PathVariable int id) throws PostNotFoundException {
-    return postService.getPostById(id);
+  public PostByIdResponse postsById(@PathVariable int id, Principal principal) throws PostNotFoundException {
+    return postService.getPostById(id, principal);
   }
 
   @GetMapping("/api/post/my")
@@ -66,8 +70,8 @@ public class PostController {
 
   @PostMapping("/api/post")
   @PreAuthorize("hasAuthority('user:write')")
-  public ResponseEntity<AddPostResponse> addPost(@Valid @RequestBody AddPostRequest addPostRequest, Errors errors,
-      Principal principal) throws AddNewPostValidationException{
+  public ResponseEntity<AddPostResponse> addPost(@Valid @RequestBody AddPostRequest addPostRequest,
+      Errors errors, Principal principal) throws AddNewPostValidationException{
     if (errors.hasErrors()) {
       throw new AddNewPostValidationException(errors);
     }
@@ -79,5 +83,16 @@ public class PostController {
   public PostResponse addPost(@RequestParam int offset, @RequestParam int limit,
       @RequestParam String status, Principal principal) {
     return postService.getModerationPosts(offset, limit, status, principal.getName());
+  }
+
+  @PutMapping("/api/post/{id}")
+  @PreAuthorize("hasAuthority('user:write')")
+  public ResponseEntity<EditPostResponse> editPost(@PathVariable int id,
+      @Valid @RequestBody EditPostRequest editPostRequest, Errors errors, Principal principal)
+      throws EditPostValidationException {
+    if (errors.hasErrors()) {
+      throw new EditPostValidationException(errors);
+    }
+    return postService.editPost(id, editPostRequest, principal.getName());
   }
 }
