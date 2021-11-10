@@ -1,6 +1,5 @@
 package main.repository;
 
-import java.util.Map;
 import main.dto.response.PostInfo;
 import main.dto.response.PostWithCount;
 import main.dto.response.PostWithLike;

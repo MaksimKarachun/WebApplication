@@ -1,6 +1,8 @@
 package main.exception;
 
 
+import main.dto.response.AddPostCommentErrorDTO;
+import main.dto.response.AddPostCommentErrorResponse;
 import main.dto.response.AddPostErrorDTO;
 import main.dto.response.AddPostResponse;
 import main.dto.response.BadResponse;
@@ -21,79 +23,91 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class AppExceptionHandler {
 
-    @ExceptionHandler(PostNotFoundException.class)
-    public ResponseEntity<BadResponse> postNotFoundExceptionHandler(PostNotFoundException exception) {
-        return new ResponseEntity<>(new BadResponse(exception.getMessage()), HttpStatus.NOT_FOUND);
-    }
+  @ExceptionHandler(PostNotFoundException.class)
+  public ResponseEntity<BadResponse> postNotFoundExceptionHandler(PostNotFoundException exception) {
+    return new ResponseEntity<>(new BadResponse(exception.getMessage()), HttpStatus.NOT_FOUND);
+  }
 
-    @ExceptionHandler(AddNewPostValidationException.class)
-    public ResponseEntity<AddPostResponse> addNewPostValidationExceptionHandler(AddNewPostValidationException exception) {
-        AddPostResponse addPostResponse = new AddPostResponse(false);
-        AddPostErrorDTO addPostErrorDTO = new AddPostErrorDTO();
-        exception.errorList.getFieldErrors().forEach(fieldError -> {
-            if (fieldError.getField().equals("text")) {
-                addPostErrorDTO.setText(fieldError.getDefaultMessage());
-            } else {
-                addPostErrorDTO.setTitle(fieldError.getDefaultMessage());
-            }
-        });
-        addPostResponse.setErrors(addPostErrorDTO);
-        return new ResponseEntity<>(addPostResponse, HttpStatus.OK);
-    }
+  @ExceptionHandler(AddNewPostValidationException.class)
+  public ResponseEntity<AddPostResponse> addNewPostValidationExceptionHandler(
+      AddNewPostValidationException exception) {
+    AddPostResponse addPostResponse = new AddPostResponse(false);
+    AddPostErrorDTO addPostErrorDTO = new AddPostErrorDTO();
+    exception.errorList.getFieldErrors().forEach(fieldError -> {
+      if (fieldError.getField().equals("text")) {
+        addPostErrorDTO.setText(fieldError.getDefaultMessage());
+      } else {
+        addPostErrorDTO.setTitle(fieldError.getDefaultMessage());
+      }
+    });
+    addPostResponse.setErrors(addPostErrorDTO);
+    return new ResponseEntity<>(addPostResponse, HttpStatus.OK);
+  }
 
-    @ExceptionHandler(EditPostValidationException.class)
-    public ResponseEntity<EditPostResponse> editPostValidationExceptionHandler(EditPostValidationException exception) {
-        EditPostResponse editPostResponse = new EditPostResponse(false);
-        EditPostErrorDTO editPostErrorDTO = new EditPostErrorDTO();
-        exception.errorList.getFieldErrors().forEach(fieldError -> {
-            if (fieldError.getField().equals("text")) {
-                editPostErrorDTO.setText(fieldError.getDefaultMessage());
-            } else {
-                editPostErrorDTO.setTitle(fieldError.getDefaultMessage());
-            }
-        });
-        editPostResponse.setErrors(editPostErrorDTO);
-        return new ResponseEntity<>(editPostResponse, HttpStatus.OK);
-    }
+  @ExceptionHandler(EditPostValidationException.class)
+  public ResponseEntity<EditPostResponse> editPostValidationExceptionHandler(
+      EditPostValidationException exception) {
+    EditPostResponse editPostResponse = new EditPostResponse(false);
+    EditPostErrorDTO editPostErrorDTO = new EditPostErrorDTO();
+    exception.errorList.getFieldErrors().forEach(fieldError -> {
+      if (fieldError.getField().equals("text")) {
+        editPostErrorDTO.setText(fieldError.getDefaultMessage());
+      } else {
+        editPostErrorDTO.setTitle(fieldError.getDefaultMessage());
+      }
+    });
+    editPostResponse.setErrors(editPostErrorDTO);
+    return new ResponseEntity<>(editPostResponse, HttpStatus.OK);
+  }
 
-    @ExceptionHandler(RegisterValidationException.class)
-    public ResponseEntity<RegisterResponse> registerValidationExceptionHandler(RegisterValidationException exception) {
-        RegisterResponse registerResponse = new RegisterResponse();
-        RegisterErrorDTO registerErrorDTO = new RegisterErrorDTO();
-        exception.errorList.getFieldErrors().forEach(fieldError -> {
-            if (fieldError.getField().equals("name")) {
-                registerErrorDTO.setName(fieldError.getDefaultMessage());
-            }
-            if (fieldError.getField().equals("password")) {
-                registerErrorDTO.setPassword(fieldError.getDefaultMessage());
-            }
-        });
-        registerResponse.setErrors(registerErrorDTO);
-        return new ResponseEntity<>(registerResponse, HttpStatus.OK);
-    }
+  @ExceptionHandler(RegisterValidationException.class)
+  public ResponseEntity<RegisterResponse> registerValidationExceptionHandler(
+      RegisterValidationException exception) {
+    RegisterResponse registerResponse = new RegisterResponse();
+    RegisterErrorDTO registerErrorDTO = new RegisterErrorDTO();
+    exception.errorList.getFieldErrors().forEach(fieldError -> {
+      if (fieldError.getField().equals("name")) {
+        registerErrorDTO.setName(fieldError.getDefaultMessage());
+      }
+      if (fieldError.getField().equals("password")) {
+        registerErrorDTO.setPassword(fieldError.getDefaultMessage());
+      }
+    });
+    registerResponse.setErrors(registerErrorDTO);
+    return new ResponseEntity<>(registerResponse, HttpStatus.OK);
+  }
 
-    @ExceptionHandler(UploadImageException.class)
-    public ResponseEntity<UploadImageErrorResponse> notAllowedImageTypeException(
-        UploadImageException exception){
-        UploadImageErrorResponse response = new UploadImageErrorResponse();
-        response.setResult(false);
-        response.setErrors(new UploadImageErrorDto(exception.getMessage()));
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-    }
+  @ExceptionHandler(UploadImageException.class)
+  public ResponseEntity<UploadImageErrorResponse> notAllowedImageTypeException(
+      UploadImageException exception) {
+    UploadImageErrorResponse response = new UploadImageErrorResponse();
+    response.setResult(false);
+    response.setErrors(new UploadImageErrorDto(exception.getMessage()));
+    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+  }
 
-    @ExceptionHandler(LoginException.class)
-    public ResponseEntity<LoginResponse> runtimeExceptionHandler() {
-        return new ResponseEntity<>(new LoginResponse(false), HttpStatus.OK);
-    }
+  @ExceptionHandler(LoginException.class)
+  public ResponseEntity<LoginResponse> runtimeExceptionHandler() {
+    return new ResponseEntity<>(new LoginResponse(false), HttpStatus.OK);
+  }
 
-    @ExceptionHandler(ModerationPostException.class)
-    public ResponseEntity<ModerationPostResponse> moderationPostExceptionHandler() {
-        return new ResponseEntity<>(new ModerationPostResponse(false), HttpStatus.OK);
-    }
+  @ExceptionHandler(ModerationPostException.class)
+  public ResponseEntity<ModerationPostResponse> moderationPostExceptionHandler() {
+    return new ResponseEntity<>(new ModerationPostResponse(false), HttpStatus.OK);
+  }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<BadResponse> runtimeExceptionHandler(RuntimeException exception) {
-        return new ResponseEntity<>(new BadResponse(exception.getMessage()),
-            HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+  @ExceptionHandler(AddPostCommentException.class)
+  public ResponseEntity<AddPostCommentErrorResponse> addPostCommentExceptionHandler(
+      AddPostCommentException exception) {
+    AddPostCommentErrorResponse response = new AddPostCommentErrorResponse();
+    response.setResult(false);
+    response.setErrors(new AddPostCommentErrorDTO(exception.getMessage()));
+    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(RuntimeException.class)
+  public ResponseEntity<BadResponse> runtimeExceptionHandler(RuntimeException exception) {
+    return new ResponseEntity<>(new BadResponse(exception.getMessage()),
+        HttpStatus.INTERNAL_SERVER_ERROR);
+  }
 }

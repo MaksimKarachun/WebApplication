@@ -2,18 +2,22 @@ package main.service;
 
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;
+import main.dto.request.AddPostCommentRequest;
 import main.dto.request.AddPostRequest;
 import main.dto.request.EditPostRequest;
 import main.dto.response.*;
+import main.exception.AddPostCommentException;
 import main.exception.PostNotFoundException;
 import main.model.ModerationStatus;
 import main.model.Post;
 import main.model.PostComment;
 import main.model.Tag;
 import main.model.User;
+import main.repository.PostCommentRepository;
 import main.repository.PostRepository;
 import main.repository.TagRepository;
 import main.repository.UserRepository;
+import main.stringConst.StringConstant;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -36,6 +40,8 @@ public class PostService {
   private final UserRepository userRepository;
 
   private final TagRepository tagRepository;
+
+  private final PostCommentRepository postCommentRepository;
 
   /**
    * Получение постов в зависимости от переданного параметра mode. Модификатор по умолчанию
@@ -218,6 +224,24 @@ public class PostService {
     return new ResponseEntity<>(new EditPostResponse(true), HttpStatus.OK);
   }
 
+  public ResponseEntity<AddPostCommentResponse> addPostComment(AddPostCommentRequest request,
+      String userEmail) {
+    Post post = Optional.of(postRepository.getPostById(request.getPostId()))
+        .orElseThrow(() -> new AddPostCommentException(StringConstant.POST_NOT_FOUND));
+    User user = Optional.of(userRepository.findByEmail(userEmail))
+        .orElseThrow(() -> new AddPostCommentException(StringConstant.USER_NOT_FOUND));
+    AddPostCommentResponse response = new AddPostCommentResponse();
+    PostComment comment = new PostComment();
+    comment.setPost(post);
+    comment.setParentId(request.getParentId());
+    comment.setText(request.getText());
+    comment.setUser(user);
+    comment.setTime(new Date());
+    int commentId = postCommentRepository.save(comment).getId();
+    response.setId(commentId);
+    return new ResponseEntity<>(response, HttpStatus.OK);
+  }
+
   private PostResponse preparePostResponse(List<main.model.Post> postList, long postCount) {
     PostResponse postResponse = new PostResponse();
     postResponse.setCount(postCount);
@@ -260,12 +284,13 @@ public class PostService {
       // TODO: 18.07.2021
       UserForCommentDTO userForCommentDTO = new UserForCommentDTO(user.getId(),
           user.getName(),
-          "photo");
+          user.getPhoto());
       postByIdResponse.getComments().add(new CommentDTO(postComment.getId(),
           (postComment.getTime().getTime() / 1000),
           postComment.getText(),
           userForCommentDTO));
     }
+
     //Добавление имен тегов поста в postByIdResponse в нужном формате: Tag -> Tag.getName()
     List<String> tagName = post.getTags().stream()
         .map(Tag::getName)

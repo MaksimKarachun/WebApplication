@@ -13,4 +13,12 @@ public class StringConstant {
   public static final String DATA_BASE_ERROR_MESSAGE = "Ошибка при обращении к БД.";
 
   public static final String NOT_ALLOWED_IMAGE_TYPE_ERROR_MESSAGE = "Недопустимый формат изображения.";
+
+  public static final String POST_NOT_FOUND = "Пост не найден.";
+
+  public static final String USER_NOT_FOUND = "Пост не найден.";
+
+  public static final String USER_WITH_EMAIL_ALREADY_EXIST = "Пользователь с указанным email уже зарегистрирован.";
+
+  private StringConstant(){}
 }
