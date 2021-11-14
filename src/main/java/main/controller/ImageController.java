@@ -21,6 +21,6 @@ public class ImageController {
   @PreAuthorize("hasAuthority('user:write')")
   public ResponseEntity<String> uploadImage(@RequestBody MultipartFile image)
       throws IOException, UploadImageException {
-    return imageService.uploadImage(image);
+    return imageService.uploadCommentImage(image);
   }
 }

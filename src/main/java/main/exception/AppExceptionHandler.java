@@ -10,6 +10,7 @@ import main.dto.response.EditPostErrorDTO;
 import main.dto.response.EditPostResponse;
 import main.dto.response.LoginResponse;
 import main.dto.response.ModerationPostResponse;
+import main.dto.response.PostVoteResponse;
 import main.dto.response.RegisterErrorDTO;
 import main.dto.response.RegisterResponse;
 import main.dto.response.UploadImageErrorDto;
@@ -103,6 +104,11 @@ public class AppExceptionHandler {
     response.setResult(false);
     response.setErrors(new AddPostCommentErrorDTO(exception.getMessage()));
     return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(PostVoteException.class)
+  public ResponseEntity<PostVoteResponse> runtimeExceptionHandler(PostVoteException exception) {
+    return new ResponseEntity<>(new PostVoteResponse(false), HttpStatus.OK);
   }
 
   @ExceptionHandler(RuntimeException.class)

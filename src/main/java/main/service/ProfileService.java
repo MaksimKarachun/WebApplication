@@ -1,10 +1,12 @@
 package main.service;
 
+import java.io.IOException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import main.dto.request.EditProfileRequest;
 import main.dto.response.EditProfileResponse;
 import main.exception.EditProfileException;
+import main.exception.UploadImageException;
 import main.model.User;
 import main.repository.UserRepository;
 import main.stringConst.StringConstant;
@@ -22,35 +24,51 @@ public class ProfileService {
 
   private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-  public ResponseEntity<EditProfileResponse> editProfile(MultipartFile photo, String name,
-      String email, boolean removePhoto) {
+  private final ImageService imageService;
 
-    return null;
+  public ResponseEntity<EditProfileResponse> editProfile(MultipartFile photo, String name,
+      String email, String password, boolean removePhoto, String userEmail)
+      throws IOException, UploadImageException, EditProfileException {
+    User user = userRepository.findByEmail(userEmail);
+    String imagePath = imageService.uploadProfileImage(photo);
+    commonEditProfile(user, name, email, password, removePhoto, imagePath);
+    return new ResponseEntity<>(new EditProfileResponse(true), HttpStatus.OK);
   }
 
-  public ResponseEntity<EditProfileResponse> editProfile(EditProfileRequest request, String userEmail)
+  public ResponseEntity<EditProfileResponse> editProfile(EditProfileRequest request,
+      String userEmail)
       throws EditProfileException {
     User user = Optional.of(userRepository.findByEmail(userEmail))
         .orElseThrow(RuntimeException::new);
-    if (request.getName() != null) {
-      user.setName(request.getName());
+    commonEditProfile(user, request.getName(), request.getEmail(), request.getPassword(),
+        request.isRemovePhoto(), null);
+    EditProfileResponse response = new EditProfileResponse();
+    response.setResult(true);
+    return new ResponseEntity<>(response, HttpStatus.OK);
+  }
+
+  private void commonEditProfile(User user, String name, String email, String password,
+      boolean removePhoto, String imagePath)
+      throws EditProfileException {
+    if (name != null) {
+      user.setName(name);
     }
-    if (request.getPassword() != null) {
-      user.setPassword(bCryptPasswordEncoder.encode(request.getPassword()));
+    if (password != null) {
+      user.setPassword(bCryptPasswordEncoder.encode(password));
     }
-    if (!request.getEmail().equals(userEmail)) {
-      if (userRepository.findByEmail(request.getEmail()) == null) {
-        user.setEmail(request.getEmail());
+    if (!email.equals(user.getEmail())) {
+      if (userRepository.findByEmail(email) == null) {
+        user.setEmail(email);
       } else {
         throw new EditProfileException(StringConstant.USER_WITH_EMAIL_ALREADY_EXIST);
       }
     }
-    if (request.isRemovePhoto()) {
+    if (removePhoto) {
       user.setPhoto("");
     }
+    if (imagePath != null) {
+      user.setPhoto(imagePath);
+    }
     userRepository.save(user);
-    EditProfileResponse response = new EditProfileResponse();
-    response.setResult(true);
-    return new ResponseEntity<>(response, HttpStatus.OK);
   }
 }

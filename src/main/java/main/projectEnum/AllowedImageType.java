@@ -6,7 +6,8 @@ import lombok.Getter;
 public enum AllowedImageType {
 
   PNG("image/png", ".png"),
-  JPG("image/jpg", ".jpg");
+  JPG("image/jpg", ".jpg"),
+  JPEG("image/jpeg", ".jpeg");
 
   private final String contentType;
   private final String format;

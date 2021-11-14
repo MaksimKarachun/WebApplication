@@ -1,5 +1,6 @@
 package main.controller;
 
+import java.io.IOException;
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;
 import main.dto.request.AddPostCommentRequest;
@@ -7,11 +8,13 @@ import main.dto.request.EditProfileRequest;
 import main.dto.request.ModerationPostRequest;
 import main.dto.response.*;
 import main.exception.EditProfileException;
+import main.exception.UploadImageException;
 import main.service.ModerationService;
 import main.service.PostService;
 import main.service.ProfileService;
 import main.service.SettingsService;
 import main.service.TagService;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -72,7 +75,12 @@ public class ApiGeneralController {
   @PostMapping(value = "/api/profile/my", consumes = {"multipart/form-data"})
   @PreAuthorize("hasAuthority('user:write')")
   public ResponseEntity<EditProfileResponse> editProfile(@RequestParam MultipartFile photo,
-      @RequestParam String name, @RequestParam String email, @RequestParam boolean removePhoto) {
-    return profileService.editProfile(photo, name, email, removePhoto);
+                                                        @RequestParam String name,
+                                                        @RequestParam String email,
+                                                        @RequestParam(required = false) String password,
+                                                        @RequestParam boolean removePhoto,
+                                                        Principal principal)
+      throws IOException, UploadImageException, EditProfileException {
+    return profileService.editProfile(photo, name, email, password, removePhoto, principal.getName());
   }
 }

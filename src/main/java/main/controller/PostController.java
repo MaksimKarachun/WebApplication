@@ -4,13 +4,17 @@ import java.security.Principal;
 import lombok.RequiredArgsConstructor;
 import main.dto.request.AddPostRequest;
 import main.dto.request.EditPostRequest;
+import main.dto.request.PostVoteRequest;
 import main.dto.response.AddPostResponse;
 import main.dto.response.EditPostResponse;
+import main.dto.response.PostVoteResponse;
 import main.dto.response.PostByIdResponse;
 import main.dto.response.PostResponse;
 import main.exception.AddNewPostValidationException;
 import main.exception.EditPostValidationException;
 import main.exception.PostNotFoundException;
+import main.exception.PostVoteException;
+import main.projectEnum.Vote;
 import main.service.PostService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +28,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
+import static main.projectEnum.Vote.LIKE;
+import static main.projectEnum.Vote.DISLIKE;
 
 
 @RestController
@@ -40,24 +46,25 @@ public class PostController {
 
   @GetMapping("/api/post/search")
   public PostResponse postsBySearch(@RequestParam int offset, @RequestParam int limit,
-      @RequestParam String query){
+      @RequestParam String query) {
     return postService.getPostsBySearch(offset, limit, query);
   }
 
   @GetMapping("/api/post/byDate")
   public PostResponse postsByDate(@RequestParam int offset, @RequestParam int limit,
-      @RequestParam String date){
+      @RequestParam String date) {
     return postService.getPostsByDate(offset, limit, date);
   }
 
   @GetMapping("/api/post/byTag")
   public PostResponse postsByTag(@RequestParam int offset, @RequestParam int limit,
-      @RequestParam String tag){
+      @RequestParam String tag) {
     return postService.getPostsByTag(offset, limit, tag);
   }
 
   @GetMapping("/api/post/{id}")
-  public PostByIdResponse postsById(@PathVariable int id, Principal principal) throws PostNotFoundException {
+  public PostByIdResponse postsById(@PathVariable int id, Principal principal)
+      throws PostNotFoundException {
     return postService.getPostById(id, principal);
   }
 
@@ -71,11 +78,12 @@ public class PostController {
   @PostMapping("/api/post")
   @PreAuthorize("hasAuthority('user:write')")
   public ResponseEntity<AddPostResponse> addPost(@Valid @RequestBody AddPostRequest addPostRequest,
-      Errors errors, Principal principal) throws AddNewPostValidationException{
+      Errors errors, Principal principal) throws AddNewPostValidationException {
     if (errors.hasErrors()) {
       throw new AddNewPostValidationException(errors);
     }
-    return new ResponseEntity<>(postService.addNewPost(addPostRequest, principal.getName()), HttpStatus.OK);
+    return new ResponseEntity<>(postService.addNewPost(addPostRequest, principal.getName()),
+        HttpStatus.OK);
   }
 
   @GetMapping("/api/post/moderation")
@@ -94,5 +102,19 @@ public class PostController {
       throw new EditPostValidationException(errors);
     }
     return postService.editPost(id, editPostRequest, principal.getName());
+  }
+
+  @PostMapping("/api/post/like")
+  @PreAuthorize("hasAuthority('user:write')")
+  public ResponseEntity<PostVoteResponse> likePost(@RequestBody PostVoteRequest request,
+      Principal principal) throws PostVoteException {
+    return postService.votePost(request, principal.getName(), LIKE);
+  }
+
+  @PostMapping("/api/post/dislike")
+  @PreAuthorize("hasAuthority('user:write')")
+  public ResponseEntity<PostVoteResponse> dislikePost(@RequestBody PostVoteRequest request,
+      Principal principal) throws PostVoteException {
+    return postService.votePost(request, principal.getName(), DISLIKE);
   }
 }
