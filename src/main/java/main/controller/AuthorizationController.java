@@ -12,6 +12,7 @@ import main.exception.LoginException;
 import main.exception.DataBaseException;
 import main.exception.RegisterValidationException;
 import main.service.AuthorizationService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,33 +24,34 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public class AuthorizationController {
 
-    private final AuthorizationService authorizationService;
+  private final AuthorizationService authorizationService;
 
-    @PostMapping(value = "/api/auth/login")
-    public LoginResponse login(@RequestBody LoginRequest loginRequest)
-        throws LoginException {
-        return authorizationService.loginUser(loginRequest);
-    }
+  @PostMapping(value = "/api/auth/login")
+  public LoginResponse login(@RequestBody LoginRequest loginRequest)
+      throws LoginException {
+    return authorizationService.loginUser(loginRequest);
+  }
 
-    @GetMapping("/api/auth/check")
-    public LoginResponse authCheckResponse(Principal principal){
-        if (principal == null) {
-            return new LoginResponse(false);
-        }
-        return authorizationService.authCheck(principal);
+  @GetMapping("/api/auth/check")
+  public LoginResponse authCheckResponse(Principal principal) {
+    if (principal == null) {
+      return new LoginResponse(false);
     }
+    return authorizationService.authCheck(principal);
+  }
 
-    @GetMapping("/api/auth/captcha")
-    public CaptchaResponse getCaptcha() throws DataBaseException {
-        return authorizationService.getCaptchaCode();
-    }
+  @GetMapping("/api/auth/captcha")
+  public CaptchaResponse getCaptcha() throws DataBaseException {
+    return authorizationService.getCaptchaCode();
+  }
 
-    @PostMapping(value = "/api/auth/register")
-    public RegisterResponse registration(@Valid @RequestBody RegisterRequest registerRequest, Errors errors)
-        throws DataBaseException, RegisterValidationException {
-        if (errors.hasErrors()) {
-            throw new RegisterValidationException(errors);
-        }
-        return authorizationService.registerNewUser(registerRequest);
+  @PostMapping(value = "/api/auth/register")
+  public ResponseEntity<RegisterResponse> registration(
+      @Valid @RequestBody RegisterRequest registerRequest, Errors errors)
+      throws DataBaseException, RegisterValidationException {
+    if (errors.hasErrors()) {
+      throw new RegisterValidationException(errors);
     }
+    return authorizationService.registerNewUser(registerRequest);
+  }
 }

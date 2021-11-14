@@ -12,13 +12,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CalendarService {
 
-    private final PostRepository postRepository;
+  private final PostRepository postRepository;
 
-    public CalendarResponse getPostByYear(String year){
-        CalendarResponse calendarResponse = new CalendarResponse();
-        calendarResponse.setYears(postRepository.getPostsYears());
-        List<PostInfo> postInfoList = postRepository.getPostsByYear(year);
-        postInfoList.forEach(e -> calendarResponse.addToPosts(e.getDate(), e.getPostsCount()));
-        return calendarResponse;
-    }
+  public CalendarResponse getPostByYear(String year) {
+    CalendarResponse calendarResponse = new CalendarResponse();
+    calendarResponse.setYears(postRepository.getPostsYears());
+    List<PostInfo> postInfoList = postRepository.getPostsByYear(year);
+    postInfoList.forEach(e -> calendarResponse.addToPosts(e.getDate(), e.getPostsCount()));
+    return calendarResponse;
+  }
 }

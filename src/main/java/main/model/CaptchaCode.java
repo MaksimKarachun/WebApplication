@@ -11,19 +11,19 @@ import java.util.Date;
 @Data
 public class CaptchaCode {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false)
-    private int id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(nullable = false)
+  private int id;
 
-    @DateTimeFormat(pattern = "yyyy.MM.dd HH-mm")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd HH-mm")
-    @Column(columnDefinition = "DATETIME", nullable = false)
-    private Date time;
+  @DateTimeFormat(pattern = "yyyy.MM.dd HH-mm")
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd HH-mm")
+  @Column(columnDefinition = "DATETIME", nullable = false)
+  private Date time;
 
-    @Column(columnDefinition = "TINYTEXT", nullable = false)
-    private String code;
+  @Column(columnDefinition = "TINYTEXT", nullable = false)
+  private String code;
 
-    @Column(name = "secret_code", columnDefinition = "TINYTEXT", nullable = false)
-    private String secretCode;
+  @Column(name = "secret_code", columnDefinition = "TINYTEXT", nullable = false)
+  private String secretCode;
 }

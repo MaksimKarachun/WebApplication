@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class CalendarController {
 
-    private final CalendarService calendarService;
+  private final CalendarService calendarService;
 
-    @GetMapping("/api/calendar")
-    public CalendarResponse postsByParam(@RequestParam String year){
-        return calendarService.getPostByYear(year);
-    }
+  @GetMapping("/api/calendar")
+  public CalendarResponse postsByParam(@RequestParam String year) {
+    return calendarService.getPostByYear(year);
+  }
 }

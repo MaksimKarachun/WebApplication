@@ -8,16 +8,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface CaptchaRepository extends JpaRepository<CaptchaCode, Integer> {
 
-    /**
-     * Метод для очистки устаревших записей в таблицу.
-     * Срок хранения - 1ч.
-     */
-    @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Transactional
-    @Query("delete " +
-            "from CaptchaCode cc " +
-            "where cc.time < (sysdate() - 3600)")
-    Integer deleteOldCaptcha();
+  /**
+   * Метод для очистки устаревших записей в таблицу. Срок хранения - 1ч.
+   */
+  @Modifying(clearAutomatically = true, flushAutomatically = true)
+  @Transactional
+  @Query("delete " +
+      "from CaptchaCode cc " +
+      "where cc.time < (sysdate() - 3600)")
+  Integer deleteOldCaptcha();
 
-    CaptchaCode findBySecretCode(String requestSecret);
+  CaptchaCode findBySecretCode(String requestSecret);
 }

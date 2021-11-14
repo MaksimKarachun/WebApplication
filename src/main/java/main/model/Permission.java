@@ -1,17 +1,17 @@
 package main.model;
 
-public enum  Permission {
+public enum Permission {
 
-    USER("user:write"),
-    MODERATE("user:moderate");
+  USER("user:write"),
+  MODERATE("user:moderate");
 
-    private final String permission;
+  private final String permission;
 
-    Permission(String permission) {
-        this.permission = permission;
-    }
+  Permission(String permission) {
+    this.permission = permission;
+  }
 
-    public String getPermission() {
-        return permission;
-    }
+  public String getPermission() {
+    return permission;
+  }
 }

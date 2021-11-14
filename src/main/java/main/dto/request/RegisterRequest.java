@@ -18,7 +18,7 @@ public class RegisterRequest {
     private String email;
     @Size(min = 6, message = "Пароль короче 6 символов.")
     private String password;
-    @Pattern(regexp = "^[A-ZА-Я][a-zа-я]{1,25}$", message = "Неверноый формат имени пользователя.")
+    @Pattern(regexp = "^[A-ZА-Яa-zа-я]{1,25}$", message = "Неверноый формат имени пользователя.")
     private String name;
     private String captcha;
     @JsonProperty("captcha_secret")

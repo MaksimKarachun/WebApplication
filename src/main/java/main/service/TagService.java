@@ -14,22 +14,23 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TagService {
 
-    private final TagRepository tagRepository;
+  private final TagRepository tagRepository;
 
-    public TagResponse getDefaultTagResponse(){
-        TagResponse tagResponse = new TagResponse();
-        List<TagCount> tagCount = tagRepository.findDefaultTags();
-        tagCount.forEach( e -> tagResponse.addToTagList(new TagDTO(e.getName(), e.getCount() / getMaxCount(tagCount))));
-        return tagResponse;
-    }
+  public TagResponse getDefaultTagResponse() {
+    TagResponse tagResponse = new TagResponse();
+    List<TagCount> tagCount = tagRepository.findDefaultTags();
+    tagCount.forEach(e -> tagResponse
+        .addToTagList(new TagDTO(e.getName(), e.getCount() / getMaxCount(tagCount))));
+    return tagResponse;
+  }
 
-    private double getMaxCount(List<TagCount> tags){
-        double maxCount = 0;
-        for (TagCount tag : tags){
-            if (tag.getCount() > maxCount){
-                maxCount = tag.getCount();
-            }
-        }
-        return maxCount;
+  private double getMaxCount(List<TagCount> tags) {
+    double maxCount = 0;
+    for (TagCount tag : tags) {
+      if (tag.getCount() > maxCount) {
+        maxCount = tag.getCount();
+      }
     }
+    return maxCount;
+  }
 }

@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface GlobalSettingsRepository extends CrudRepository<GlobalSetting, Integer> {
 
-    @Query("select gs from GlobalSetting gs where gs.code = :code")
-    GlobalSetting findSettingByCode(@Param("code") String code);
+  @Query("select gs from GlobalSetting gs where gs.code = :code")
+  GlobalSetting findSettingByCode(@Param("code") String code);
 }

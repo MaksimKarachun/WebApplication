@@ -12,12 +12,12 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private final UserRepository userRepository;
+  private final UserRepository userRepository;
 
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        // TODO: 12.09.2021 сделать Optional
-        User user = userRepository.findByEmail(email);
-        return SecurityUser.fromUser(user);
-    }
+  @Override
+  public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    // TODO: 12.09.2021 сделать Optional
+    User user = userRepository.findByEmail(email);
+    return SecurityUser.fromUser(user);
+  }
 }
