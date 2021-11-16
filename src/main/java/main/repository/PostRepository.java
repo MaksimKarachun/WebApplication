@@ -186,4 +186,14 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
   @Query("select count(p) from Post p " +
       "where moderationStatus = 'NEW'")
   Integer getCountModerationPosts();
+
+
+  /**
+   * Получение постов утвержденных пользователем
+   */
+  @Query("select p from Post p " +
+      "where isActive = 1 " +
+      "and moderationStatus = 'ACCEPTED' " +
+      "and p.user.id = :id")
+  List<Post> getPostsByUser(@Param("id") int id);
 }
