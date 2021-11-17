@@ -37,7 +37,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .anyRequest().authenticated()
             .and()
             .formLogin().disable()
-            .logout(logout -> logout
+/*            .logout(logout -> logout
                 .permitAll()
                 .deleteCookies("JSESSIONID")
                 .logoutUrl("/api/auth/logout")
@@ -50,7 +50,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                   httpServletResponse.setCharacterEncoding("UTF-8");
                   out.print(objectMapper.writeValueAsString(new LoginResponse(true)));
                   out.flush();
-                }))
+                }))*/
             .httpBasic().disable();
     }
 

@@ -1,7 +1,5 @@
 package main.service.implementation;
 
-import java.security.Principal;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -35,10 +33,23 @@ public class StatisticsServiceImpl implements StatisticsService {
   public ResponseEntity<StatisticsResponse> getUserStatistics(String userEmail) {
     User user = Optional.of(userRepository.findByEmail(userEmail))
         .orElseThrow(() -> new UsernameNotFoundException(StringConstant.USER_NOT_FOUND));
-    List<PostVote> postVoteList = postVotesRepository.getUserPostVote(user.getId());
     List<Post> userPosts = postRepository.getPostsByUser(user.getId());
+    List<PostVote> postVoteList = postVotesRepository.getUserPostVote(user.getId());
+    return new ResponseEntity<>(
+        prepareStatisticsResponse(userPosts, postVoteList), HttpStatus.OK);
+  }
 
-    long postCount = userPosts == null ? 0 : userPosts.size();
+  @Override
+  public ResponseEntity<StatisticsResponse> getAllStatistics() {
+    List<Post> postList = postRepository.getAllPosts();
+    List<PostVote> postVoteList = postVotesRepository.getAllPostVote();
+    return new ResponseEntity<>(
+        prepareStatisticsResponse(postList, postVoteList), HttpStatus.OK);
+  }
+
+  private StatisticsResponse prepareStatisticsResponse(List<Post> postList, List<PostVote> postVoteList) {
+
+    long postCount = postList == null ? 0 : postList.size();
 
     long likesCount = postVoteList == null ? 0
         : postVoteList.stream().filter(pv -> pv.getValue() == LIKE.getValue()).count();
@@ -47,25 +58,13 @@ public class StatisticsServiceImpl implements StatisticsService {
         : postVoteList.stream().filter(pv -> pv.getValue() == DISLIKE.getValue()).count();
 
     long viewsCount =
-        userPosts == null ? 0 : userPosts.stream().mapToLong(Post::getViewCount).sum();
+        postList == null ? 0 : postList.stream().mapToLong(Post::getViewCount).sum();
 
     long firstPublication =
-        userPosts == null ? 0
-            : userPosts.stream().mapToLong(p -> p.getTime().getTime() / 1000).min()
+        postList == null ? 0
+            : postList.stream().mapToLong(p -> p.getTime().getTime() / 1000).min()
                 .orElse(0);
 
-    return new ResponseEntity<>(
-        prepareStatisticsResponse(postCount, likesCount, dislikesCount, viewsCount,
-            firstPublication), HttpStatus.OK);
-  }
-
-  @Override
-  public ResponseEntity<StatisticsResponse> getAllStatistics() {
-    return null;
-  }
-
-  private StatisticsResponse prepareStatisticsResponse(long postCount, long likesCount,
-      long dislikesCount, long viewsCount, long firstPublication) {
     StatisticsResponse statisticsResponse = new StatisticsResponse();
     statisticsResponse.setPostsCount(postCount);
     statisticsResponse.setLikesCount(likesCount);
