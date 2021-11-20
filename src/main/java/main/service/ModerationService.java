@@ -1,5 +1,6 @@
 package main.service;
 
+import java.util.Date;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import main.dto.request.ModerationPostRequest;
@@ -46,6 +47,7 @@ public class ModerationService {
     if (request.getDecision().equals(ACCEPT.getName())) {
       post.setModerationStatus(ACCEPTED);
     }
+    post.setTime(new Date());
     post.setModeratorId(moderator);
     postRepository.save(post);
     response.setResult(true);
