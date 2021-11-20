@@ -5,18 +5,14 @@ import lombok.RequiredArgsConstructor;
 import main.dto.request.AddPostCommentRequest;
 import main.dto.request.AddPostRequest;
 import main.dto.request.EditPostRequest;
-import main.dto.request.PostVoteRequest;
 import main.dto.response.*;
 import main.exception.AddPostCommentException;
 import main.exception.PostNotFoundException;
-import main.exception.PostVoteException;
 import main.model.ModerationStatus;
 import main.model.Post;
 import main.model.PostComment;
-import main.model.PostVote;
 import main.model.Tag;
 import main.model.User;
-import main.projectEnum.Vote;
 import main.repository.PostCommentRepository;
 import main.repository.PostRepository;
 import main.repository.TagRepository;
@@ -39,6 +35,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PostService {
 
+  private static final int POST_PREVIEW_LENGTH = 150;
+
   private final PostRepository postRepository;
 
   private final UserRepository userRepository;
@@ -46,6 +44,8 @@ public class PostService {
   private final TagRepository tagRepository;
 
   private final PostCommentRepository postCommentRepository;
+
+  private final StringUtilsService stringUtilsService;
 
   /**
    * Получение постов в зависимости от переданного параметра mode. Модификатор по умолчанию
@@ -120,7 +120,6 @@ public class PostService {
     return preparePostResponse(postList, postList.size());
   }
 
-  // TODO: 06.10.2021 Уточнить необходимость кастомного исключения
   public PostByIdResponse getPostById(int id, Principal principal) {
     Post post = postRepository.getPostById(id);
     if (principal != null) {
@@ -168,7 +167,7 @@ public class PostService {
     User user = userRepository.findByEmail(userEmail);
     Post post = new Post();
     post.setActive(addPostRequest.getActive());
-    post.setModerationStatus(ModerationStatus.NEW);
+    post.setModerationStatus(user.isModerator() ? ModerationStatus.ACCEPTED : ModerationStatus.NEW);
     post.setUser(user);
     post.setTime(new Date(addPostRequest.getTimestamp() * 1000));
     post.setTitle(addPostRequest.getTitle());
@@ -246,57 +245,6 @@ public class PostService {
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
-  public ResponseEntity<PostVoteResponse> votePost(PostVoteRequest request, String userEmail,
-      Vote vote)
-      throws PostVoteException {
-    User user = Optional.of(userRepository.findByEmail(userEmail))
-        .orElseThrow(PostVoteException::new);
-    Post post = postRepository.getPostById(request.getPostId());
-    List<PostVote> postVoteList = post.getPostVotes();
-    if (post.getUser().getId() != user.getId() && checkDoubleVote(postVoteList, user,
-        vote.getValue())) {
-      addPostVote(user, post, vote.getValue());
-      return new ResponseEntity<>(new PostVoteResponse(true), HttpStatus.OK);
-    } else {
-      return new ResponseEntity<>(new PostVoteResponse(false), HttpStatus.OK);
-    }
-  }
-
-  private void addPostVote(User user, Post post, int value) {
-    List<PostVote> postVoteList = post.getPostVotes();
-    if (checkOppositeVote(postVoteList, user, value)) {
-      PostVote postVote = new PostVote();
-      postVote.setPost(post);
-      postVote.setUser(user);
-      postVote.setValue((byte) value);
-      postVote.setTime(new Date());
-      postVoteList.add(postVote);
-    }
-    postRepository.save(post);
-  }
-
-  private boolean checkDoubleVote(List<PostVote> postVoteList, User user, int value) {
-    PostVote doublePostVote = postVoteList.stream()
-        .filter(pv -> pv.getUser().getId() == user.getId() && pv.getValue() == value)
-        .findFirst()
-        .orElse(null);
-    return doublePostVote == null;
-  }
-
-  private boolean checkOppositeVote(List<PostVote> postVoteList, User user, int value) {
-    PostVote postVote = postVoteList.stream()
-        .filter(pv -> pv.getUser().getId() == user.getId() && pv.getValue() == value * -1)
-        .findFirst()
-        .orElse(null);
-    if (postVote == null) {
-      return true;
-    } else {
-      postVote.setValue((byte) (value));
-      postVote.setTime(new Date());
-      return false;
-    }
-  }
-
   private PostResponse preparePostResponse(List<main.model.Post> postList, long postCount) {
     PostResponse postResponse = new PostResponse();
     postResponse.setCount(postCount);
@@ -307,7 +255,7 @@ public class PostService {
             post.getTime().getTime() / 1000,
             new UserDTO(post.getUser().getId(), post.getUser().getName()),
             post.getTitle(),
-            post.getText(),
+            stringUtilsService.cuttingText(post.getText(), POST_PREVIEW_LENGTH),
             post.getLikeCount(),
             post.getDislikeCount(),
             post.getPostComments().size(),
@@ -336,7 +284,6 @@ public class PostService {
     //Добавление комментариев поста в postByIdResponse в нужном формате: PostComment -> CommentDTO
     for (PostComment postComment : post.getPostComments()) {
       User user = postComment.getUser();
-      // TODO: 18.07.2021
       UserForCommentDTO userForCommentDTO = new UserForCommentDTO(user.getId(),
           user.getName(),
           user.getPhoto());

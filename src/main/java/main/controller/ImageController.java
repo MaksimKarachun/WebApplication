@@ -4,6 +4,7 @@ import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import main.exception.UploadImageException;
 import main.service.ImageService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +22,6 @@ public class ImageController {
   @PreAuthorize("hasAuthority('user:write')")
   public ResponseEntity<String> uploadImage(@RequestBody MultipartFile image)
       throws IOException, UploadImageException {
-    return imageService.uploadCommentImage(image);
+    return new ResponseEntity<>(imageService.uploadCommentImage(image), HttpStatus.OK);
   }
 }
