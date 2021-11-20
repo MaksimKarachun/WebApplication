@@ -22,7 +22,6 @@ public class StatisticsController {
   }
 
   @GetMapping("/api/statistics/all")
-  @PreAuthorize("hasAuthority('user:write')")
   public ResponseEntity<StatisticsResponse> getAllStatistics() {
     return statisticsService.getAllStatistics();
   }

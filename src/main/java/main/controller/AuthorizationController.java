@@ -12,7 +12,9 @@ import main.exception.LoginException;
 import main.exception.DataBaseException;
 import main.exception.RegisterValidationException;
 import main.service.AuthorizationService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,6 +32,12 @@ public class AuthorizationController {
   public LoginResponse login(@RequestBody LoginRequest loginRequest)
       throws LoginException {
     return authorizationService.loginUser(loginRequest);
+  }
+
+  @GetMapping(value = "/api/auth/logout")
+  public ResponseEntity<LoginResponse> logout() {
+    SecurityContextHolder.clearContext();
+    return new ResponseEntity<>(new LoginResponse(true), HttpStatus.OK);
   }
 
   @GetMapping("/api/auth/check")

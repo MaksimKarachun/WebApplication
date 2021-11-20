@@ -1,6 +1,5 @@
 package main.service.interfaces;
 
-import java.security.Principal;
 import main.dto.response.StatisticsResponse;
 import org.springframework.http.ResponseEntity;
 

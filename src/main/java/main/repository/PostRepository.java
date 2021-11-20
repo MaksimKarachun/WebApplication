@@ -189,11 +189,21 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
 
 
   /**
-   * Получение постов утвержденных пользователем
+   * Получение всех постов пользователя
    */
   @Query("select p from Post p " +
       "where isActive = 1 " +
       "and moderationStatus = 'ACCEPTED' " +
-      "and p.user.id = :id")
+      "and p.user.id = :id " +
+      "and time < sysdate()")
   List<Post> getPostsByUser(@Param("id") int id);
+
+  /**
+   * Получение всех постов блога
+   */
+  @Query("select p from Post p " +
+      "where isActive = 1 " +
+      "and moderationStatus = 'ACCEPTED' " +
+      "and time < sysdate()")
+  List<Post> getAllPosts();
 }
