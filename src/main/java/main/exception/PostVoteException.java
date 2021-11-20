@@ -1,4 +1,4 @@
 package main.exception;
 
-public class PostVoteException extends Exception {
+public class PostVoteException extends RuntimeException {
 }

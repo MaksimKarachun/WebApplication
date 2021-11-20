@@ -13,9 +13,8 @@ import main.dto.response.PostResponse;
 import main.exception.AddNewPostValidationException;
 import main.exception.EditPostValidationException;
 import main.exception.PostNotFoundException;
-import main.exception.PostVoteException;
-import main.projectEnum.Vote;
 import main.service.PostService;
+import main.service.interfaces.PostVoteService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -37,6 +36,8 @@ import static main.projectEnum.Vote.DISLIKE;
 public class PostController {
 
   private final PostService postService;
+
+  private final PostVoteService postVoteService;
 
   @GetMapping("/api/post")
   public PostResponse postsByParam(@RequestParam int offset, @RequestParam int limit,
@@ -107,14 +108,14 @@ public class PostController {
   @PostMapping("/api/post/like")
   @PreAuthorize("hasAuthority('user:write')")
   public ResponseEntity<PostVoteResponse> likePost(@RequestBody PostVoteRequest request,
-      Principal principal) throws PostVoteException {
-    return postService.votePost(request, principal.getName(), LIKE);
+      Principal principal) {
+    return postVoteService.votePost(request, principal.getName(), LIKE);
   }
 
   @PostMapping("/api/post/dislike")
   @PreAuthorize("hasAuthority('user:write')")
   public ResponseEntity<PostVoteResponse> dislikePost(@RequestBody PostVoteRequest request,
-      Principal principal) throws PostVoteException {
-    return postService.votePost(request, principal.getName(), DISLIKE);
+      Principal principal) {
+    return postVoteService.votePost(request, principal.getName(), DISLIKE);
   }
 }

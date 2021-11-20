@@ -32,7 +32,7 @@ databaseChangeLog:
               - column:
                   header: photo
                   name: photo
-                  type: skip
+                  type: STRING
               - column:
                   header: reg_time
                   name: reg_time
