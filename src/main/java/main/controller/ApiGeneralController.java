@@ -14,7 +14,6 @@ import main.service.PostService;
 import main.service.ProfileService;
 import main.service.SettingsService;
 import main.service.TagService;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,17 +32,11 @@ public class ApiGeneralController {
   private final TagService tagService;
   private final ModerationService moderationService;
   private final PostService postService;
-  private final ProfileService profileService;
 
 
   @GetMapping("/api/init")
   public InitResponse init() {
     return initResponse;
-  }
-
-  @GetMapping("/api/settings")
-  public SettingsResponse settings() {
-    return settingsService.getGlobalSettings();
   }
 
   @GetMapping("/api/tag")
@@ -63,24 +56,5 @@ public class ApiGeneralController {
   public ResponseEntity<AddPostCommentResponse> addPostComment(
       @RequestBody AddPostCommentRequest request, Principal principal) {
     return postService.addPostComment(request, principal.getName());
-  }
-
-  @PostMapping(value = "/api/profile/my", consumes = {"application/json"})
-  @PreAuthorize("hasAuthority('user:write')")
-  public ResponseEntity<EditProfileResponse> editProfile(@RequestBody EditProfileRequest request,
-      Principal principal) throws EditProfileException {
-    return profileService.editProfile(request, principal.getName());
-  }
-
-  @PostMapping(value = "/api/profile/my", consumes = {"multipart/form-data"})
-  @PreAuthorize("hasAuthority('user:write')")
-  public ResponseEntity<EditProfileResponse> editProfile(@RequestParam MultipartFile photo,
-                                                        @RequestParam String name,
-                                                        @RequestParam String email,
-                                                        @RequestParam(required = false) String password,
-                                                        @RequestParam boolean removePhoto,
-                                                        Principal principal)
-      throws IOException, UploadImageException, EditProfileException {
-    return profileService.editProfile(photo, name, email, password, removePhoto, principal.getName());
   }
 }
