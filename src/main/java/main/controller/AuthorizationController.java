@@ -19,28 +19,30 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/auth")
 public class AuthorizationController {
 
   private final AuthorizationService authorizationService;
 
-  @PostMapping(value = "/api/auth/login")
+  @PostMapping(value = "/login")
   public LoginResponse login(@RequestBody LoginRequest loginRequest)
       throws LoginException {
     return authorizationService.loginUser(loginRequest);
   }
 
-  @GetMapping(value = "/api/auth/logout")
+  @GetMapping(value = "/logout")
   public ResponseEntity<LoginResponse> logout() {
     SecurityContextHolder.clearContext();
     return new ResponseEntity<>(new LoginResponse(true), HttpStatus.OK);
   }
 
-  @GetMapping("/api/auth/check")
+  @GetMapping("/check")
   public LoginResponse authCheckResponse(Principal principal) {
     if (principal == null) {
       return new LoginResponse(false);
@@ -48,12 +50,12 @@ public class AuthorizationController {
     return authorizationService.authCheck(principal);
   }
 
-  @GetMapping("/api/auth/captcha")
+  @GetMapping("/captcha")
   public CaptchaResponse getCaptcha() throws DataBaseException {
     return authorizationService.getCaptchaCode();
   }
 
-  @PostMapping(value = "/api/auth/register")
+  @PostMapping(value = "/register")
   public ResponseEntity<RegisterResponse> registration(
       @Valid @RequestBody RegisterRequest registerRequest, Errors errors)
       throws DataBaseException, RegisterValidationException {

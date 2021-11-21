@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
@@ -33,50 +34,20 @@ import static main.projectEnum.Vote.DISLIKE;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/post")
 public class PostController {
 
   private final PostService postService;
 
   private final PostVoteService postVoteService;
 
-  @GetMapping("/api/post")
+  @GetMapping
   public PostResponse postsByParam(@RequestParam int offset, @RequestParam int limit,
       @RequestParam String mode) {
     return postService.getPostsByParam(offset, limit, mode);
   }
 
-  @GetMapping("/api/post/search")
-  public PostResponse postsBySearch(@RequestParam int offset, @RequestParam int limit,
-      @RequestParam String query) {
-    return postService.getPostsBySearch(offset, limit, query);
-  }
-
-  @GetMapping("/api/post/byDate")
-  public PostResponse postsByDate(@RequestParam int offset, @RequestParam int limit,
-      @RequestParam String date) {
-    return postService.getPostsByDate(offset, limit, date);
-  }
-
-  @GetMapping("/api/post/byTag")
-  public PostResponse postsByTag(@RequestParam int offset, @RequestParam int limit,
-      @RequestParam String tag) {
-    return postService.getPostsByTag(offset, limit, tag);
-  }
-
-  @GetMapping("/api/post/{id}")
-  public PostByIdResponse postsById(@PathVariable int id, Principal principal)
-      throws PostNotFoundException {
-    return postService.getPostById(id, principal);
-  }
-
-  @GetMapping("/api/post/my")
-  @PreAuthorize("hasAuthority('user:write')")
-  public PostResponse myPosts(@RequestParam int offset, @RequestParam int limit,
-      @RequestParam String status, Principal principal) {
-    return postService.getMyPosts(offset, limit, status, principal.getName());
-  }
-
-  @PostMapping("/api/post")
+  @PostMapping
   @PreAuthorize("hasAuthority('user:write')")
   public ResponseEntity<AddPostResponse> addPost(@Valid @RequestBody AddPostRequest addPostRequest,
       Errors errors, Principal principal) throws AddNewPostValidationException {
@@ -87,14 +58,45 @@ public class PostController {
         HttpStatus.OK);
   }
 
-  @GetMapping("/api/post/moderation")
+  @GetMapping("/search")
+  public PostResponse postsBySearch(@RequestParam int offset, @RequestParam int limit,
+      @RequestParam String query) {
+    return postService.getPostsBySearch(offset, limit, query);
+  }
+
+  @GetMapping("/byDate")
+  public PostResponse postsByDate(@RequestParam int offset, @RequestParam int limit,
+      @RequestParam String date) {
+    return postService.getPostsByDate(offset, limit, date);
+  }
+
+  @GetMapping("/byTag")
+  public PostResponse postsByTag(@RequestParam int offset, @RequestParam int limit,
+      @RequestParam String tag) {
+    return postService.getPostsByTag(offset, limit, tag);
+  }
+
+  @GetMapping("/{id}")
+  public PostByIdResponse postsById(@PathVariable int id, Principal principal)
+      throws PostNotFoundException {
+    return postService.getPostById(id, principal);
+  }
+
+  @GetMapping("/my")
+  @PreAuthorize("hasAuthority('user:write')")
+  public PostResponse myPosts(@RequestParam int offset, @RequestParam int limit,
+      @RequestParam String status, Principal principal) {
+    return postService.getMyPosts(offset, limit, status, principal.getName());
+  }
+
+  @GetMapping("/moderation")
   @PreAuthorize("hasAuthority('user:moderate')")
   public PostResponse addPost(@RequestParam int offset, @RequestParam int limit,
       @RequestParam String status, Principal principal) {
     return postService.getModerationPosts(offset, limit, status, principal.getName());
   }
 
-  @PutMapping("/api/post/{id}")
+  @PutMapping("/{id}")
   @PreAuthorize("hasAuthority('user:write')")
   public ResponseEntity<EditPostResponse> editPost(@PathVariable int id,
       @Valid @RequestBody EditPostRequest editPostRequest, Errors errors, Principal principal)
@@ -105,14 +107,14 @@ public class PostController {
     return postService.editPost(id, editPostRequest, principal.getName());
   }
 
-  @PostMapping("/api/post/like")
+  @PostMapping("/like")
   @PreAuthorize("hasAuthority('user:write')")
   public ResponseEntity<PostVoteResponse> likePost(@RequestBody PostVoteRequest request,
       Principal principal) {
     return postVoteService.votePost(request, principal.getName(), LIKE);
   }
 
-  @PostMapping("/api/post/dislike")
+  @PostMapping("/dislike")
   @PreAuthorize("hasAuthority('user:write')")
   public ResponseEntity<PostVoteResponse> dislikePost(@RequestBody PostVoteRequest request,
       Principal principal) {
