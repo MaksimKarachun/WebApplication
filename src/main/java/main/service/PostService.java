@@ -17,7 +17,7 @@ import main.repository.PostCommentRepository;
 import main.repository.PostRepository;
 import main.repository.TagRepository;
 import main.repository.UserRepository;
-import main.stringConst.StringConstant;
+import main.config.StringConstant;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

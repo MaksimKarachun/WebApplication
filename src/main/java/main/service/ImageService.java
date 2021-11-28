@@ -10,11 +10,10 @@ import javax.imageio.ImageIO;
 import lombok.RequiredArgsConstructor;
 import main.exception.UploadImageException;
 import main.projectEnum.AllowedImageType;
-import main.service.interfaces.ImageResizer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import static main.stringConst.StringConstant.NOT_ALLOWED_IMAGE_TYPE_ERROR_MESSAGE;
+import static main.config.StringConstant.NOT_ALLOWED_IMAGE_TYPE_ERROR_MESSAGE;
 import static main.projectEnum.AllowedImageType.JPG;
 
 

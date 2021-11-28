@@ -1,4 +1,4 @@
-package main.stringConst;
+package main.config;
 
 public class StringConstant {
 
@@ -16,7 +16,7 @@ public class StringConstant {
 
   public static final String POST_NOT_FOUND = "Пост не найден.";
 
-  public static final String USER_NOT_FOUND = "Пост не найден.";
+  public static final String USER_NOT_FOUND = "Пользователь не найден.";
 
   public static final String USER_WITH_EMAIL_ALREADY_EXIST = "Пользователь с указанным email уже зарегистрирован.";
 

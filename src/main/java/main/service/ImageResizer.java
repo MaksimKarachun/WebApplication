@@ -1,15 +1,14 @@
-package main.service.implementation;
+package main.service;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import lombok.RequiredArgsConstructor;
-import main.service.interfaces.ImageResizer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
-public class ImageResizerImpl implements ImageResizer {
+public class ImageResizer {
 
   @Value("${profileImage.wight}")
   private int standardImageWight;
@@ -17,7 +16,6 @@ public class ImageResizerImpl implements ImageResizer {
   @Value("${profileImage.height}")
   private int standardImageHeight;
 
-  @Override
   public BufferedImage resizeImage(BufferedImage originalImage) {
     Image resultingImage = originalImage
         .getScaledInstance(standardImageWight, standardImageHeight, Image.SCALE_DEFAULT);

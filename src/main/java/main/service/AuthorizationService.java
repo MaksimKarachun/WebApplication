@@ -7,16 +7,13 @@ import main.dto.request.LoginRequest;
 import main.dto.response.*;
 import main.dto.request.RegisterRequest;
 import main.repository.PostRepository;
-import main.stringConst.StringConstant;
+import main.config.StringConstant;
 import main.exception.LoginException;
 import main.exception.DataBaseException;
 import main.model.CaptchaCode;
 import main.model.User;
 import main.repository.CaptchaRepository;
 import main.repository.UserRepository;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -98,7 +95,7 @@ public class AuthorizationService {
     String name = registerRequest.getName();
     //проверка капчи
     CaptchaCode captcha = captchaRepository.findBySecretCode(requestSecret);
-    if (captcha == null || !captcha.getCode().equals(registerRequest.getCaptcha())) {
+    if (captcha == null || !captcha.getCode().equalsIgnoreCase(registerRequest.getCaptcha())) {
       registerResponse.setResult(false);
       error.setCaptcha(StringConstant.CAPTCHA_CODE_ERROR_MESSAGE);
     }

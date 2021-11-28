@@ -9,7 +9,7 @@ import main.exception.EditProfileException;
 import main.exception.UploadImageException;
 import main.model.User;
 import main.repository.UserRepository;
-import main.stringConst.StringConstant;
+import main.config.StringConstant;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

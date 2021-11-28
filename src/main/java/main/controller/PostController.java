@@ -14,7 +14,7 @@ import main.exception.AddNewPostValidationException;
 import main.exception.EditPostValidationException;
 import main.exception.PostNotFoundException;
 import main.service.PostService;
-import main.service.interfaces.PostVoteService;
+import main.service.PostVoteService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
