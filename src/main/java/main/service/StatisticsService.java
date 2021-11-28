@@ -1,4 +1,4 @@
-package main.service.implementation;
+package main.service;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,8 +10,7 @@ import main.model.User;
 import main.repository.PostRepository;
 import main.repository.PostVotesRepository;
 import main.repository.UserRepository;
-import main.service.interfaces.StatisticsService;
-import main.stringConst.StringConstant;
+import main.config.StringConstant;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,7 +20,7 @@ import static main.projectEnum.Vote.DISLIKE;
 
 @Service
 @RequiredArgsConstructor
-public class StatisticsServiceImpl implements StatisticsService {
+public class StatisticsService {
 
   private final UserRepository userRepository;
 
@@ -29,7 +28,6 @@ public class StatisticsServiceImpl implements StatisticsService {
 
   private final PostVotesRepository postVotesRepository;
 
-  @Override
   public ResponseEntity<StatisticsResponse> getUserStatistics(String userEmail) {
     User user = Optional.of(userRepository.findByEmail(userEmail))
         .orElseThrow(() -> new UsernameNotFoundException(StringConstant.USER_NOT_FOUND));
@@ -39,7 +37,6 @@ public class StatisticsServiceImpl implements StatisticsService {
         prepareStatisticsResponse(userPosts, postVoteList), HttpStatus.OK);
   }
 
-  @Override
   public ResponseEntity<StatisticsResponse> getAllStatistics() {
     List<Post> postList = postRepository.getAllPosts();
     List<PostVote> postVoteList = postVotesRepository.getAllPostVote();

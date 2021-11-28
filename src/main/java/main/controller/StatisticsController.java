@@ -3,7 +3,7 @@ package main.controller;
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;
 import main.dto.response.StatisticsResponse;
-import main.service.interfaces.StatisticsService;
+import main.service.StatisticsService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;

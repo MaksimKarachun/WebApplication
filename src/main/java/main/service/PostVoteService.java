@@ -1,4 +1,4 @@
-package main.service.implementation;
+package main.service;
 
 import java.util.Date;
 import java.util.List;
@@ -13,20 +13,18 @@ import main.model.User;
 import main.projectEnum.Vote;
 import main.repository.PostRepository;
 import main.repository.UserRepository;
-import main.service.interfaces.PostVoteService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class PostVoteServiceImpl implements PostVoteService {
+public class PostVoteService {
 
   private final UserRepository userRepository;
 
   private final PostRepository postRepository;
 
-  @Override
   public ResponseEntity<PostVoteResponse> votePost(PostVoteRequest request, String userEmail,
       Vote vote) throws PostVoteException {
     User user = Optional.of(userRepository.findByEmail(userEmail))

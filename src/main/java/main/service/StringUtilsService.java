@@ -26,12 +26,14 @@ public class StringUtilsService {
 
   public String cuttingText (String text, int finalLength) {
     String textWithoutHtml = Jsoup.parse(text).text();
-    String finalText = null;
+    String finalText;
     if (textWithoutHtml.length() > finalLength) {
       finalText = textWithoutHtml.substring(0, finalLength);
       finalText = finalText.substring(0 , finalText.lastIndexOf(" "));
+      return finalText + "...";
+    } else {
+      return textWithoutHtml;
     }
-    return finalText + "...";
   }
 
   private String getRandomFromDictionary(int strLength, String dictionary) {
