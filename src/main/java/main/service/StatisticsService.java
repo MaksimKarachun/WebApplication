@@ -1,5 +1,6 @@
 package main.service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -31,14 +32,14 @@ public class StatisticsService {
   public ResponseEntity<StatisticsResponse> getUserStatistics(String userEmail) {
     User user = Optional.of(userRepository.findByEmail(userEmail))
         .orElseThrow(() -> new UsernameNotFoundException(StringConstant.USER_NOT_FOUND));
-    List<Post> userPosts = postRepository.getPostsByUser(user.getId());
+    List<Post> userPosts = postRepository.getPostsByUser(user.getId(), new Date());
     List<PostVote> postVoteList = postVotesRepository.getUserPostVote(user.getId());
     return new ResponseEntity<>(
         prepareStatisticsResponse(userPosts, postVoteList), HttpStatus.OK);
   }
 
   public ResponseEntity<StatisticsResponse> getAllStatistics() {
-    List<Post> postList = postRepository.getAllPosts();
+    List<Post> postList = postRepository.getAllPosts(new Date());
     List<PostVote> postVoteList = postVotesRepository.getAllPostVote();
     return new ResponseEntity<>(
         prepareStatisticsResponse(postList, postVoteList), HttpStatus.OK);

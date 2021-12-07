@@ -1,5 +1,6 @@
 package main.repository;
 
+import java.util.Date;
 import main.dto.response.PostInfo;
 import main.dto.response.PostWithCount;
 import main.dto.response.PostWithLike;
@@ -21,9 +22,9 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
    */
   @Query("select count(p) from Post p " +
       "where moderationStatus = 'ACCEPTED' " +
-      "and time < sysdate()" +
+      "and time < :date " +
       "and isActive = 1")
-  Integer getPostCount();
+  Integer getPostCount(@Param("date") Date date);
 
   /**
    * Метод для модификатора recent (модификатор по умолчанию): сортировать посты по дате публикации,
@@ -31,9 +32,9 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
    */
   @Query("select p from Post p " +
       "where moderationStatus = 'ACCEPTED' " +
-      "and time < sysdate()" +
+      "and time < :date " +
       "and isActive = 1")
-  Page<Post> findPostsByParamRecent(Pageable pageable);
+  Page<Post> findPostsByParamRecent(Pageable pageable, @Param("date") Date date);
 
   /**
    * Метод для модификатора popular: сортировать посты по количеству комментариев
@@ -41,9 +42,9 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
   @Query("select p as post, count(p) as commentCount from Post as p " +
       "left join PostComment as pc on p.id = pc.post.id " +
       "where p.moderationStatus = 'ACCEPTED' " +
-      "and p.time < sysdate()" +
+      "and p.time < :date " +
       "and p.isActive = 1 group by p.id")
-  Page<PostWithCount> findPostsByParamPopular(Pageable pageable);
+  Page<PostWithCount> findPostsByParamPopular(Pageable pageable, @Param("date") Date date);
 
 
   /**
@@ -52,9 +53,9 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
   @Query("select p as post, sum(pv.value) as postLike from Post as p " +
       "left join PostVote as pv on p.id = pv.post.id " +
       "where p.moderationStatus = 'ACCEPTED' " +
-      "and p.time < sysdate()" +
+      "and p.time < :date " +
       "and p.isActive = 1 group by p.id")
-  Page<PostWithLike> findPostsByParamBest(Pageable pageable);
+  Page<PostWithLike> findPostsByParamBest(Pageable pageable, @Param("date") Date date);
 
   /**
    * Метод для модификатора best: сортировать посты по количеству лайков
@@ -62,28 +63,28 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
   @Query("select sum(pv.value) as postLike from Post as p " +
       "left join PostVote as pv on p.id = pv.post.id " +
       "where p.moderationStatus = 'ACCEPTED' " +
-      "and p.time < sysdate()" +
+      "and p.time < :date " +
       "and p.isActive = 1 group by p.id")
-  Long findPostsCountByParamBest();
+  Long findPostsCountByParamBest(@Param("date") Date date);
 
   /**
    * Поиск постов по запросу в строке поиска
    */
   @Query("select p from Post as p " +
       "where p.moderationStatus = 'ACCEPTED' " +
-      "and p.time < sysdate()" +
+      "and p.time < :date " +
       "and p.isActive = 1" +
       "and (p.title like %:query% or p.text like %:query%)")
-  List<Post> findPostsByQuery(Pageable pageable, @Param("query") String query);
+  List<Post> findPostsByQuery(Pageable pageable, @Param("query") String query, @Param("date") Date date);
 
   /**
    * Получение всех годов за которые есть посты
    */
   @Query("select distinct year(p.time) as years from Post as p " +
       "where p.moderationStatus = 'ACCEPTED' " +
-      "and p.time < sysdate()" +
+      "and p.time < :date " +
       "and p.isActive = 1")
-  List<Integer> getPostsYears();
+  List<Integer> getPostsYears(@Param("date") Date date);
 
   /**
    * Получение информации по постам в формате год: количество постов
@@ -91,10 +92,10 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
   @Query("select date_format(p.time, '%Y-%m-%d') as date, " +
       "count(p) as postsCount from Post as p " +
       "where p.moderationStatus = 'ACCEPTED' " +
-      "and p.time < sysdate()" +
+      "and p.time < :date " +
       "and p.isActive = 1 " +
       "and date_format(p.time, '%Y') = :year group by date")
-  List<PostInfo> getPostsByYear(@Param("year") String year);
+  List<PostInfo> getPostsByYear(@Param("year") String year, @Param("date") Date date);
 
   /**
    * Получеие постов за указанную дату
@@ -114,9 +115,9 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
       "join Tag as t on t.id = tp.tag.id " +
       "where p.moderationStatus = 'ACCEPTED' " +
       "and p.isActive = 1 " +
-      "and p.time < sysdate()" +
+      "and p.time < :date " +
       "and t.name like :tag")
-  List<Post> findPostsByTag(Pageable pageable, @Param("tag") String tag);
+  List<Post> findPostsByTag(Pageable pageable, @Param("tag") String tag, @Param("date") Date date);
 
   /**
    * Получение поста по id
@@ -195,8 +196,8 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
       "where isActive = 1 " +
       "and moderationStatus = 'ACCEPTED' " +
       "and p.user.id = :id " +
-      "and time < sysdate()")
-  List<Post> getPostsByUser(@Param("id") int id);
+      "and time < :date")
+  List<Post> getPostsByUser(@Param("id") int id, @Param("date") Date date);
 
   /**
    * Получение всех постов блога
@@ -204,6 +205,6 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
   @Query("select p from Post p " +
       "where isActive = 1 " +
       "and moderationStatus = 'ACCEPTED' " +
-      "and time < sysdate()")
-  List<Post> getAllPosts();
+      "and time < :date")
+  List<Post> getAllPosts(@Param("date") Date date);
 }
