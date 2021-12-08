@@ -5,13 +5,16 @@ import java.security.Principal;
 import lombok.RequiredArgsConstructor;
 import main.dto.request.LoginRequest;
 import main.dto.request.RegisterRequest;
+import main.dto.request.RestoreRequest;
 import main.dto.response.CaptchaResponse;
 import main.dto.response.LoginResponse;
 import main.dto.response.RegisterResponse;
+import main.dto.response.RestoreResponse;
 import main.exception.LoginException;
 import main.exception.DataBaseException;
 import main.exception.RegisterValidationException;
 import main.service.AuthorizationService;
+import main.service.SettingsService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,6 +32,8 @@ import javax.validation.Valid;
 public class AuthorizationController {
 
   private final AuthorizationService authorizationService;
+
+  private final SettingsService settingsService;
 
   @PostMapping(value = "/login")
   public LoginResponse login(@RequestBody LoginRequest loginRequest)
@@ -62,6 +67,14 @@ public class AuthorizationController {
     if (errors.hasErrors()) {
       throw new RegisterValidationException(errors);
     }
+    if (!settingsService.getMultiuserModeSetting()) {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
     return authorizationService.registerNewUser(registerRequest);
+  }
+
+  @PostMapping(value = "/restore")
+  public ResponseEntity<RestoreResponse> restore(@RequestBody RestoreRequest request){
+    return authorizationService.restorePassword(request);
   }
 }

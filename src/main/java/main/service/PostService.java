@@ -47,6 +47,8 @@ public class PostService {
 
   private final StringUtilsService stringUtilsService;
 
+  private final SettingsService settingsService;
+
   /**
    * Получение постов в зависимости от переданного параметра mode. Модификатор по умолчанию
    * "recent".
@@ -98,7 +100,8 @@ public class PostService {
     } else {
       int pageNumber = offset / limit;
       Pageable pageWithPosts = PageRequest.of(pageNumber, limit, Sort.by("time"));
-      List<Post> postList = Optional.of(postRepository.findPostsByQuery(pageWithPosts, query, new Date()))
+      List<Post> postList = Optional
+          .of(postRepository.findPostsByQuery(pageWithPosts, query, new Date()))
           .orElseThrow(() -> new RuntimeException("Не удалось получить данные из БД."));
       return preparePostResponse(postList, postList.size());
     }
@@ -167,7 +170,7 @@ public class PostService {
     User user = userRepository.findByEmail(userEmail);
     Post post = new Post();
     post.setActive(addPostRequest.getActive());
-    post.setModerationStatus(user.isModerator() ? ModerationStatus.ACCEPTED : ModerationStatus.NEW);
+    post.setModerationStatus(getPostModerationStatus(user));
     post.setUser(user);
     post.setTime(new Date(addPostRequest.getTimestamp() * 1000));
     post.setTitle(addPostRequest.getTitle());
@@ -314,5 +317,13 @@ public class PostService {
       tagList.add(tag);
     }
     return tagList;
+  }
+
+  private ModerationStatus getPostModerationStatus(User user) {
+    if (user.isModerator() || !settingsService.getPostModerationSetting()) {
+      return ModerationStatus.ACCEPTED;
+    } else {
+      return ModerationStatus.NEW;
+    }
   }
 }

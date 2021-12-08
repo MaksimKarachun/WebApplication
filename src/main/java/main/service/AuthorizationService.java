@@ -2,8 +2,8 @@ package main.service;
 
 import com.github.cage.Cage;
 import com.github.cage.GCage;
-import lombok.RequiredArgsConstructor;
 import main.dto.request.LoginRequest;
+import main.dto.request.RestoreRequest;
 import main.dto.response.*;
 import main.dto.request.RegisterRequest;
 import main.repository.PostRepository;
@@ -14,6 +14,9 @@ import main.model.CaptchaCode;
 import main.model.User;
 import main.repository.CaptchaRepository;
 import main.repository.UserRepository;
+import main.template.EmailTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,6 +24,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,7 +34,6 @@ import java.util.Base64;
 import java.util.Date;
 
 @Service
-@RequiredArgsConstructor
 public class AuthorizationService {
 
   private final CaptchaRepository captchaRepository;
@@ -44,6 +47,27 @@ public class AuthorizationService {
   private final AuthenticationManager authenticationManager;
 
   private final PostRepository postRepository;
+
+  private final EmailService emailService;
+
+  private final String recoverEmailTemplate;
+
+  @Autowired
+  public AuthorizationService(CaptchaRepository captchaRepository,
+      StringUtilsService stringUtilsService, UserRepository userRepository,
+      BCryptPasswordEncoder bCryptPasswordEncoder,
+      AuthenticationManager authenticationManager, PostRepository postRepository,
+      EmailService emailService,
+      @Qualifier("passRecoveryTemplateMessage") String recoverEmailTemplate) {
+    this.captchaRepository = captchaRepository;
+    this.stringUtilsService = stringUtilsService;
+    this.userRepository = userRepository;
+    this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+    this.authenticationManager = authenticationManager;
+    this.postRepository = postRepository;
+    this.emailService = emailService;
+    this.recoverEmailTemplate = recoverEmailTemplate;
+  }
 
 
   public LoginResponse loginUser(LoginRequest loginRequest) throws LoginException {
@@ -110,6 +134,21 @@ public class AuthorizationService {
       return new ResponseEntity<>(registerResponse, HttpStatus.OK);
     } else {
       return new ResponseEntity<>(registerResponse, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  public ResponseEntity<RestoreResponse> restorePassword(RestoreRequest request) {
+    String userEmail = request.getEmail();
+    User user = userRepository.findByEmail(userEmail);
+    if (user != null) {
+      String hash = stringUtilsService.getRandomStringSmall(42);
+      user.setCode(hash);
+      userRepository.save(user);
+      emailService.sendMail("Password recover",
+          String.format(recoverEmailTemplate, hash), userEmail);
+      return new ResponseEntity<>(new RestoreResponse(true), HttpStatus.OK);
+    } else {
+      return new ResponseEntity<>(new RestoreResponse(false), HttpStatus.OK);
     }
   }
 

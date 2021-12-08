@@ -1,5 +1,6 @@
 package main.service;
 
+import java.security.Principal;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +30,8 @@ public class StatisticsService {
 
   private final PostVotesRepository postVotesRepository;
 
+  private final SettingsService settingsService;
+
   public ResponseEntity<StatisticsResponse> getUserStatistics(String userEmail) {
     User user = Optional.of(userRepository.findByEmail(userEmail))
         .orElseThrow(() -> new UsernameNotFoundException(StringConstant.USER_NOT_FOUND));
@@ -38,11 +41,28 @@ public class StatisticsService {
         prepareStatisticsResponse(userPosts, postVoteList), HttpStatus.OK);
   }
 
-  public ResponseEntity<StatisticsResponse> getAllStatistics() {
-    List<Post> postList = postRepository.getAllPosts(new Date());
-    List<PostVote> postVoteList = postVotesRepository.getAllPostVote();
-    return new ResponseEntity<>(
-        prepareStatisticsResponse(postList, postVoteList), HttpStatus.OK);
+  public ResponseEntity<StatisticsResponse> getAllStatistics(Principal principal) {
+    if (settingsService.getStatisticIsPublicSetting()) {
+      List<Post> postList = postRepository.getAllPosts(new Date());
+      List<PostVote> postVoteList = postVotesRepository.getAllPostVote();
+      return new ResponseEntity<>(
+          prepareStatisticsResponse(postList, postVoteList), HttpStatus.OK);
+    } else {
+      if (principal == null) {
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+      }
+      String userEmail = principal.getName();
+      User user = Optional.of(userRepository.findByEmail(userEmail))
+          .orElseThrow(() -> new UsernameNotFoundException(StringConstant.USER_NOT_FOUND));
+      if (user == null || !user.isModerator()) {
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+      } else {
+        List<Post> postList = postRepository.getAllPosts(new Date());
+        List<PostVote> postVoteList = postVotesRepository.getAllPostVote();
+        return new ResponseEntity<>(
+            prepareStatisticsResponse(postList, postVoteList), HttpStatus.OK);
+      }
+    }
   }
 
   private StatisticsResponse prepareStatisticsResponse(List<Post> postList, List<PostVote> postVoteList) {
