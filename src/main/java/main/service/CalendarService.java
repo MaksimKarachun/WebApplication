@@ -1,5 +1,6 @@
 package main.service;
 
+import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import main.dto.response.PostInfo;
 import main.dto.response.CalendarResponse;
@@ -16,8 +17,8 @@ public class CalendarService {
 
   public CalendarResponse getPostByYear(String year) {
     CalendarResponse calendarResponse = new CalendarResponse();
-    calendarResponse.setYears(postRepository.getPostsYears());
-    List<PostInfo> postInfoList = postRepository.getPostsByYear(year);
+    calendarResponse.setYears(postRepository.getPostsYears(new Date()));
+    List<PostInfo> postInfoList = postRepository.getPostsByYear(year, new Date());
     postInfoList.forEach(e -> calendarResponse.addToPosts(e.getDate(), e.getPostsCount()));
     return calendarResponse;
   }

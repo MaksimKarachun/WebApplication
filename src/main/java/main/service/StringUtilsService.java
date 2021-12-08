@@ -19,6 +19,11 @@ public class StringUtilsService {
     return getRandomFromDictionary(strLength, dictionary);
   }
 
+  public String getRandomStringSmall(int strLength) {
+    String dictionary = "abcdefghijklmnopqrstuvwxyz1234567890";
+    return getRandomFromDictionary(strLength, dictionary);
+  }
+
   public String getRandomNumString(int strLength) {
     String dictionary = "1234567890";
     return getRandomFromDictionary(strLength, dictionary);

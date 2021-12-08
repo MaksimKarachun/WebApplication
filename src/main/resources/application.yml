@@ -19,6 +19,22 @@ spring:
     multipart:
       max-file-size: 1MB
       max-request-size: 5MB
+  mail:
+    address: http://localhost:8085
+    host: smtp.gmail.com
+    port: 587
+    username: devSocialLine@gmail.com
+    password: NtcnNtcn4545
+    properties:
+      mail:
+        debug: true
+        transport:
+          protocol: smtp
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    default-encoding: UTF-8
 
 profileImage:
   type: 'jpg'

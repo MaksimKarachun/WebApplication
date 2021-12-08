@@ -44,4 +44,20 @@ public class SettingsService {
     }
     return HttpStatus.OK;
   }
+
+  public boolean getMultiuserModeSetting() {
+    return globalSettingsRepository.findSettingByCode("MULTIUSER_MODE").getValue()
+        .equals("YES");
+  }
+
+  public boolean getPostModerationSetting() {
+    return globalSettingsRepository.findSettingByCode("POST_PREMODERATION").getValue()
+        .equals("YES");
+  }
+
+  public boolean getStatisticIsPublicSetting() {
+    return globalSettingsRepository.findSettingByCode("STATISTICS_IS_PUBLIC").getValue()
+        .equals("YES");
+  }
+
 }

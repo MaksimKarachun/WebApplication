@@ -47,6 +47,8 @@ public class PostService {
 
   private final StringUtilsService stringUtilsService;
 
+  private final SettingsService settingsService;
+
   /**
    * Получение постов в зависимости от переданного параметра mode. Модификатор по умолчанию
    * "recent".
@@ -61,7 +63,7 @@ public class PostService {
       case "popular":
         pageWithPosts = PageRequest.of(pageNumber, limit, Sort.by("commentCount").descending());
         Page<PostWithCount> postWithCountPage = Optional
-            .of(postRepository.findPostsByParamPopular(pageWithPosts))
+            .of(postRepository.findPostsByParamPopular(pageWithPosts, new Date()))
             .orElseThrow(() -> new RuntimeException("Не удалось получить данные из БД."));
         count = postWithCountPage.getTotalElements();
         postWithCountPage.toList().forEach(p -> postList.add(p.getPost()));
@@ -69,21 +71,21 @@ public class PostService {
       case "best":
         pageWithPosts = PageRequest.of(pageNumber, limit, Sort.by("postLike").descending());
         Page<PostWithLike> postWithLikePage = Optional
-            .of(postRepository.findPostsByParamBest(pageWithPosts))
+            .of(postRepository.findPostsByParamBest(pageWithPosts, new Date()))
             .orElseThrow(() -> new RuntimeException("Не удалось получить данные из БД."));
         count = postWithLikePage.getTotalElements();
         postWithLikePage.toList().forEach(p -> postList.add(p.getPost()));
         break;
       case "early":
         pageWithPosts = PageRequest.of(pageNumber, limit, Sort.by("time"));
-        postPage = Optional.of(postRepository.findPostsByParamRecent(pageWithPosts))
+        postPage = Optional.of(postRepository.findPostsByParamRecent(pageWithPosts, new Date()))
             .orElseThrow(() -> new RuntimeException("Не удалось получить данные из БД."));
         count = postPage.getTotalElements();
         postPage.forEach(postList::add);
         break;
       default:
         pageWithPosts = PageRequest.of(pageNumber, limit, Sort.by("time").descending());
-        postPage = Optional.of(postRepository.findPostsByParamRecent(pageWithPosts))
+        postPage = Optional.of(postRepository.findPostsByParamRecent(pageWithPosts, new Date()))
             .orElseThrow(() -> new RuntimeException("Не удалось получить данные из БД."));
         count = postPage.getTotalElements();
         postPage.forEach(postList::add);
@@ -98,7 +100,8 @@ public class PostService {
     } else {
       int pageNumber = offset / limit;
       Pageable pageWithPosts = PageRequest.of(pageNumber, limit, Sort.by("time"));
-      List<Post> postList = Optional.of(postRepository.findPostsByQuery(pageWithPosts, query))
+      List<Post> postList = Optional
+          .of(postRepository.findPostsByQuery(pageWithPosts, query, new Date()))
           .orElseThrow(() -> new RuntimeException("Не удалось получить данные из БД."));
       return preparePostResponse(postList, postList.size());
     }
@@ -115,7 +118,7 @@ public class PostService {
   public PostResponse getPostsByTag(int offset, int limit, String tag) {
     int pageNumber = offset / limit;
     Pageable pageWithPosts = PageRequest.of(pageNumber, limit, Sort.by("time"));
-    List<Post> postList = Optional.of(postRepository.findPostsByTag(pageWithPosts, tag))
+    List<Post> postList = Optional.of(postRepository.findPostsByTag(pageWithPosts, tag, new Date()))
         .orElseThrow(() -> new RuntimeException("Не удалось получить данные из БД."));
     return preparePostResponse(postList, postList.size());
   }
@@ -167,7 +170,7 @@ public class PostService {
     User user = userRepository.findByEmail(userEmail);
     Post post = new Post();
     post.setActive(addPostRequest.getActive());
-    post.setModerationStatus(user.isModerator() ? ModerationStatus.ACCEPTED : ModerationStatus.NEW);
+    post.setModerationStatus(getPostModerationStatus(user));
     post.setUser(user);
     post.setTime(new Date(addPostRequest.getTimestamp() * 1000));
     post.setTitle(addPostRequest.getTitle());
@@ -314,5 +317,13 @@ public class PostService {
       tagList.add(tag);
     }
     return tagList;
+  }
+
+  private ModerationStatus getPostModerationStatus(User user) {
+    if (user.isModerator() || !settingsService.getPostModerationSetting()) {
+      return ModerationStatus.ACCEPTED;
+    } else {
+      return ModerationStatus.NEW;
+    }
   }
 }
