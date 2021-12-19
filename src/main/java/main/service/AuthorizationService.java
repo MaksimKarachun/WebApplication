@@ -3,6 +3,7 @@ package main.service;
 import com.github.cage.Cage;
 import com.github.cage.GCage;
 import main.dto.request.LoginRequest;
+import main.dto.request.PasswordChangeRequest;
 import main.dto.request.RestoreRequest;
 import main.dto.response.*;
 import main.dto.request.RegisterRequest;
@@ -14,7 +15,6 @@ import main.model.CaptchaCode;
 import main.model.User;
 import main.repository.CaptchaRepository;
 import main.repository.UserRepository;
-import main.template.EmailTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -24,9 +24,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.security.Principal;
@@ -150,6 +148,32 @@ public class AuthorizationService {
     } else {
       return new ResponseEntity<>(new RestoreResponse(false), HttpStatus.OK);
     }
+  }
+
+  public ResponseEntity<PasswordChangeResponse> changePassword(PasswordChangeRequest request) {
+    PasswordChangeResponse response = new PasswordChangeResponse();
+    PasswordChangeError errors = new PasswordChangeError();
+    response.setErrors(errors);
+    User user = userRepository.findByCode(request.getCode());
+    response.setResult(true);
+    if (user == null) {
+      response.setResult(false);
+      errors.setCode(StringConstant.RECOVERY_PASSWORD_LINK_MESSAGE);
+    }
+    CaptchaCode captcha = captchaRepository.findBySecretCode(request.getCaptchaSecret());
+    if (captcha == null || !captcha.getCode().equalsIgnoreCase(request.getCaptcha())) {
+      response.setResult(false);
+      errors.setCaptcha(StringConstant.CAPTCHA_CODE_ERROR_MESSAGE);
+    }
+    if (request.getPassword().length() < 6) {
+      response.setResult(false);
+      errors.setPassword(StringConstant.PASSWORD_LENGTH_ERROR);
+    }
+    if (response.isResult() && user != null) {
+      user.setPassword(request.getPassword());
+      userRepository.save(user);
+    }
+    return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
   private CaptchaResponse prepareCaptchaResponse(String encodedString, String secret) {
