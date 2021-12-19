@@ -1,11 +1,12 @@
 #connection parameters
 server:
-  port: 8085
+  #port: ${PORT:8085}
+  port: ${PORT}
 
 spring:
   datasource:
     driverClassName: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/webapplication
+    url: jdbc:${JAWSDB_URL:mysql://localhost:3306/webapplication}
     username: root
     password: Root2021
   jpa:

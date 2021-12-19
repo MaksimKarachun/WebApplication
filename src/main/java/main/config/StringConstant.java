@@ -20,5 +20,10 @@ public class StringConstant {
 
   public static final String USER_WITH_EMAIL_ALREADY_EXIST = "Пользователь с указанным email уже зарегистрирован.";
 
-  private StringConstant(){}
+  public static final String PASSWORD_LENGTH_ERROR = "Пароль короче 6-ти символов";
+
+  public static final String RECOVERY_PASSWORD_LINK_MESSAGE = "Ссылка для восстановления пароля устарела <a href=\"/auth/restore\">Запросить ссылку снова</a>";
+
+  private StringConstant() {
+  }
 }

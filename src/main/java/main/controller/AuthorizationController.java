@@ -4,10 +4,12 @@ package main.controller;
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;
 import main.dto.request.LoginRequest;
+import main.dto.request.PasswordChangeRequest;
 import main.dto.request.RegisterRequest;
 import main.dto.request.RestoreRequest;
 import main.dto.response.CaptchaResponse;
 import main.dto.response.LoginResponse;
+import main.dto.response.PasswordChangeResponse;
 import main.dto.response.RegisterResponse;
 import main.dto.response.RestoreResponse;
 import main.exception.LoginException;
@@ -76,5 +78,10 @@ public class AuthorizationController {
   @PostMapping(value = "/restore")
   public ResponseEntity<RestoreResponse> restore(@RequestBody RestoreRequest request){
     return authorizationService.restorePassword(request);
+  }
+
+  @PostMapping(value = "/password")
+  public ResponseEntity<PasswordChangeResponse> restore(@RequestBody PasswordChangeRequest request){
+    return authorizationService.changePassword(request);
   }
 }

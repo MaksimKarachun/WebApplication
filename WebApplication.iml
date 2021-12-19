@@ -116,6 +116,6 @@
     <orderEntry type="library" name="Maven: com.github.cage:cage:1.0" level="project" />
     <orderEntry type="library" name="Maven: commons-io:commons-io:2.8.0" level="project" />
     <orderEntry type="library" name="Maven: org.jsoup:jsoup:1.14.3" level="project" />
-    <orderEntry type="library" name="Maven: org.modelmapper:modelmapper:2.3.0" level="project" />
+    <orderEntry type="library" name="Maven: org.modelmapper:modelmapper:2.3.8" level="project" />
   </component>
 </module>
