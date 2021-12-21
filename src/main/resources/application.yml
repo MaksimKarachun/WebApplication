@@ -1,7 +1,6 @@
 #connection parameters
 server:
-  #port: ${PORT:8085}
-  port: ${PORT}
+  port: ${PORT:8085}
 
 spring:
   datasource:

@@ -102,7 +102,7 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
    */
   @Query(value = "select * " +
       "from posts as p " +
-      "where date_format(p.time, '%Y-%d-%m') = str_to_date(:date, '%Y-%d-%m')",
+      "where date_format(p.time, '%Y-%m-%d') = str_to_date(:date, '%Y-%m-%d')",
       nativeQuery = true)
   List<Post> findPostsByDate(Pageable pageable, @Param("date") String date);
 
