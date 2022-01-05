@@ -9,12 +9,12 @@ import java.nio.file.Paths;
 import javax.imageio.ImageIO;
 import lombok.RequiredArgsConstructor;
 import main.exception.UploadImageException;
-import main.projectEnum.AllowedImageType;
+import main.model.appEnum.AllowedImageType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import static main.config.StringConstant.NOT_ALLOWED_IMAGE_TYPE_ERROR_MESSAGE;
-import static main.projectEnum.AllowedImageType.JPG;
+import static main.model.appEnum.AllowedImageType.JPG;
 
 
 @Service

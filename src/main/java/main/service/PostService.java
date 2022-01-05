@@ -127,7 +127,8 @@ public class PostService {
     Post post = postRepository.getPostById(id);
     if (principal != null) {
       //проверка является ли пользователь автором поста или модератором
-      if (post.getUser().getEmail().equals(principal.getName()) && !post.getUser().isModerator()) {
+      if (!post.getUser().getEmail().equals(principal.getName()) &&
+          !userRepository.findByEmail(principal.getName()).isModerator()) {
         post.incrementViewCount();
       }
     } else {

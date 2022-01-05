@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import main.dto.request.ModerationPostRequest;
 import main.dto.response.ModerationPostResponse;
 import main.exception.ModerationPostException;
-import main.exception.PostNotFoundException;
 import main.model.Post;
 import main.model.User;
 import main.repository.PostRepository;
@@ -14,8 +13,8 @@ import main.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import static main.projectEnum.ModerateDecision.DECLINE;
-import static main.projectEnum.ModerateDecision.ACCEPT;
+import static main.model.appEnum.ModerateDecision.DECLINE;
+import static main.model.appEnum.ModerateDecision.ACCEPT;
 import static main.model.ModerationStatus.DECLINED;
 import static main.model.ModerationStatus.ACCEPTED;
 

@@ -1,14 +1,7 @@
 package main.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class AddPostErrorDTO {
-
-  private String title;
-  private String text;
+public class AddPostErrorDTO extends TitleTextError {
 }

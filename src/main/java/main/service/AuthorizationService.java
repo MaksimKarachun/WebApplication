@@ -78,9 +78,8 @@ public class AuthorizationService {
           (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
       return prepareLoginResponse(userPrincipal.getUsername());
     } catch (Exception e) {
-      // TODO: 10.10.2021 Добавить запись в логи
+      throw new LoginException();
     }
-    throw new LoginException();
   }
 
   public LogoutResponse logoutUser(HttpServletRequest httpServletRequest) {

@@ -17,8 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import static main.projectEnum.Vote.LIKE;
-import static main.projectEnum.Vote.DISLIKE;
+import static main.model.appEnum.Vote.LIKE;
+import static main.model.appEnum.Vote.DISLIKE;
 
 @Service
 @RequiredArgsConstructor

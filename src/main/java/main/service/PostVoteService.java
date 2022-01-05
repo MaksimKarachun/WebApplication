@@ -10,7 +10,7 @@ import main.exception.PostVoteException;
 import main.model.Post;
 import main.model.PostVote;
 import main.model.User;
-import main.projectEnum.Vote;
+import main.model.appEnum.Vote;
 import main.repository.PostRepository;
 import main.repository.UserRepository;
 import org.springframework.http.HttpStatus;

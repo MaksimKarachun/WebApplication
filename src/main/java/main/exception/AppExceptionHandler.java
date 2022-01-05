@@ -102,7 +102,9 @@ public class AppExceptionHandler {
       AddPostCommentException exception) {
     AddPostCommentErrorResponse response = new AddPostCommentErrorResponse();
     response.setResult(false);
-    response.setErrors(new AddPostCommentErrorDTO(exception.getMessage()));
+    AddPostCommentErrorDTO error = new AddPostCommentErrorDTO();
+    error.setText(exception.getMessage());
+    response.setErrors(error);
     return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
   }
 

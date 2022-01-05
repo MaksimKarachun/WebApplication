@@ -28,8 +28,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
-import static main.projectEnum.Vote.LIKE;
-import static main.projectEnum.Vote.DISLIKE;
+import static main.model.appEnum.Vote.LIKE;
+import static main.model.appEnum.Vote.DISLIKE;
 
 
 @RestController

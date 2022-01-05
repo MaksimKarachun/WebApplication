@@ -15,7 +15,7 @@ public class EditPostRequest {
 
   private Long timestamp;
   private boolean active;
-  @Size(min = 6, message = "Загловок поста короче 3 симоволов.")
+  @Size(min = 3, message = "Загловок поста короче 3 симоволов.")
   private String title;
   private List<String> tags;
   @Size(min = 50, message = "Текст поста короче 50 симоволов.")

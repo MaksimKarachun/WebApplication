@@ -1,4 +1,4 @@
-package main.projectEnum;
+package main.model.appEnum;
 
 import lombok.Getter;
 

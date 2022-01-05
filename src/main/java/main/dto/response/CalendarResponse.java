@@ -22,11 +22,4 @@ public class CalendarResponse {
         }
         posts.put(date, count);
     }
-
-    public void addToYears(Integer year){
-        if (years == null) {
-            years = new ArrayList<>();
-        }
-        years.add(year);
-    }
 }
